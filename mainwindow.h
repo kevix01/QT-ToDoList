@@ -44,6 +44,7 @@ private:
     void createMenus();
     void createFilters(QHBoxLayout *layout);
     void initializeTable();
+    void readDefaultPath();
     int getWeekNumber(tm t);
     void updateTable(vector<string*> data);
     string path;
