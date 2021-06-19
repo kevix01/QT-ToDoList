@@ -1,12 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMainWindow>
+#include <sstream>
+#include <fstream>
 #include <QHeaderView>
+#include <sys/stat.h>
+#include <unistd.h>
+
 
 MainWindow::MainWindow()
 {
-    // This is the default path, but if it does not exist, you can change it into the program
-    path = readDefaultPath();
+    // default database file path (local program folder)
+    path = "database.cfg";
 
     QWidget *widget = new QWidget;
     setCentralWidget(widget);
@@ -33,37 +38,11 @@ MainWindow::MainWindow()
 
     widget -> setLayout(layout);
 
-    setWindowTitle("ToDo List QT");
+    setWindowTitle("ToDo List App - powered by QT");
     setMinimumSize(480, 320);
     resize(580, 480);
 }
 
-bool MainWindow::fileExists(const char* name){
-    struct stat fileInfo;
-    return stat(name, &fileInfo) == 0;
-}
-
-string MainWindow::readDefaultPath(){
-    if(MainWindow::fileExists("DefaultPath.cfg")){
-        ifstream configFile("DefaultPath.cfg");
-        if (!configFile.is_open()) {
-                cerr << "Could not open the file - '"
-                     << "DefaultPath.cfg" << "'" << endl;
-                exit(EXIT_FAILURE);
-            }
-        string temp;
-        getline (configFile,temp);
-        configFile.close();
-        return temp;
-    } else {
-        ofstream configFile;
-        configFile.open("DefaultPath.cfg");
-        configFile << "";
-        configFile.close();
-        return "";
-    }
-
-}
 void MainWindow::createMenus()
 {
     addTaskAct = new QAction(tr("&Add Task"), this);
@@ -142,11 +121,12 @@ void MainWindow::initializeTable()
     table -> setSelectionMode(QAbstractItemView::SingleSelection);
     table -> setStyleSheet("QTableView {selection-background-color: #E0F7FA; selection-color: #000000;}");
 
+    IOManager mng;
     //inserting data
-    updateTable(IOManager::readFile(path));
+    updateTable(IOManager::readFile(path,mng));
 
     connect( table, SIGNAL( cellDoubleClicked (int, int) ),
-     this, SLOT( cellSelected( int, int ) ) );
+     this, SLOT( cellSelected( int ) ) );
 }
 
 void MainWindow::addTask()
@@ -166,20 +146,82 @@ void MainWindow::newDatafile()
     dlg.exec();
 }
 
+string MainWindow::readDefaultPath(){
+    if(defaultPathFileExists("DefaultPath.cfg")){
+        ifstream configFile("DefaultPath.cfg");
+        if (!configFile.is_open()) {
+                cerr << "Could not open the file - '"
+                     << "DefaultPath.cfg" << "'" << endl;
+                exit(EXIT_FAILURE);
+        }
+        string temp;
+        getline (configFile,temp);
+        configFile.close();
+        return temp;
+    } else {
+        ofstream configFile;
+        configFile.open("DefaultPath.cfg");
+        if (!configFile.is_open()) {
+                cerr << "Could not open the file - '"
+                     << "DefaultPath.cfg" << "'" << endl;
+                exit(EXIT_FAILURE);
+        }
+        configFile << "";
+        return "";
+    }
+}
+
+bool MainWindow::defaultPathFileExists(const char* name){
+    struct stat fileInfo;
+    return stat(name, &fileInfo) == 0;
+}
+
+/*void changeDefaultPath(string& path){
+
+    ofstream configFile;
+    configFile.open("DefaultPath.cfg");
+    if (!configFile.is_open()) {
+            cerr << "Could not open the file - '"
+                 << "DefaultPath.cfg" << "'" << endl;
+            exit(EXIT_FAILURE);
+    }
+    configFile << path;
+    configFile.close();
+}*/
+
 void MainWindow::changeDB()
 {
+    bool valid = false;
     QFileDialog dlg(this);
     dlg.setFileMode(QFileDialog::ExistingFile);
-    dlg.setNameFilter(tr("Text (*.txt)"));
+    dlg.setNameFilter(tr("Database - .cfg (*.cfg)"));
     dlg.setViewMode(QFileDialog::List);
 
     QStringList fileNames;
     if (dlg.exec()){
         fileNames = dlg.selectedFiles();
-        this->path = ((QString)fileNames.at(0)).toUtf8().constData();
-        this->filter();
-    }
+        string path = ((QString)fileNames.at(0)).toUtf8().constData();
+        if (path.find("DefaultPath.cfg") != std::string::npos) {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Error");
+            msgBox.setText("Wrong database file (DefaultPath.cfg). Select a valid one.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            //msgBox.addButton(QMessageBox::No);
+            //msgBox.setDefaultButton(QMessageBox::No);
+            if(msgBox.exec() == QMessageBox::Ok)
+              return;
+        } else {
+            this->setPath(path);
+            this->filter();
+            valid = true;
 
+        }
+   }
+    if(valid)
+        addTaskAct->setEnabled(true);
+}
+
+void MainWindow::enableAddTask(){
     addTaskAct->setEnabled(true);
 }
 
@@ -188,7 +230,7 @@ void MainWindow::exitProgram()
     exit(0);
 }
 
-void MainWindow::cellSelected(int nRow, int nCol)
+void MainWindow::cellSelected(int nRow)
 {
     NewTaskDialog dlg;
     dlg.setModal(true);
@@ -198,9 +240,9 @@ void MainWindow::cellSelected(int nRow, int nCol)
     dlg.exec();
 }
 
-void MainWindow::updateTable(vector<unique_ptr<string[]> data){
+void MainWindow::updateTable(vector<string*> data){
+
     table -> clearContents();
-    string* temp = nullptr;
     table -> setRowCount(data.size());
     unsigned int i;
     for(i=0; i<data.size(); i++){
@@ -221,15 +263,14 @@ void MainWindow::updateTable(vector<unique_ptr<string[]> data){
         qtwi -> setTextAlignment(Qt::AlignCenter);
         table -> setItem(i, 3, qtwi);
         table -> setItem(i, 4, new QTableWidgetItem(QString::fromStdString(data.at(i)[3])));
-        temp = data.at(i);
-        delete[] temp;
     }
 }
 
 
 void MainWindow::filter()
 {
-    vector<string*> data = IOManager::readFile(path);
+    IOManager mng;
+    vector<string*> data = IOManager::readFile(path,mng);
     bool completed = cb_completed->isChecked();
 
     time_t now = time(0);
@@ -237,9 +278,9 @@ void MainWindow::filter()
 
     unsigned int i;
     for(i=0; i<data.size(); i++){
-        int year = stoi(IOManager::split(data.at(i)[0], '/')[0]);
-        int month = stoi(IOManager::split(data.at(i)[0], '/')[1]);
-        int day = stoi(IOManager::split(data.at(i)[0], '/')[2]);
+        int year = stoi((mng.dates = IOManager::split(data.at(i)[0], '/'))[0]);
+        int month = stoi((mng.dates = IOManager::split(data.at(i)[0], '/'))[1]);
+        int day = stoi((mng.dates = IOManager::split(data.at(i)[0], '/'))[2]);
 
         if(completed){
             if(stoi(data.at(i)[2]) == 100){
@@ -275,7 +316,6 @@ void MainWindow::filter()
             }
         }
     }
-
     updateTable(data);
 }
 
@@ -299,8 +339,19 @@ int MainWindow::getWeekNumber(tm t)
     }
     return weekNum;
 }
+
 MainWindow::~MainWindow()
 {
-
+    //delete ui;
+    delete rb_all;
+    delete rb_overdue;
+    delete rb_today;
+    delete rb_thisweek;
+    delete cb_completed;
+    delete table;
+    delete addTaskAct;
+    delete changeDBAct;
+    delete exitProgramAct;
+    delete EditMenu;
+    delete OptionsMenu;
 }
-
