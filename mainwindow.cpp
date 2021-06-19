@@ -22,7 +22,6 @@ MainWindow::MainWindow()
     // Filters
     QHBoxLayout *filtersLayout = new QHBoxLayout;
     createFilters(filtersLayout);
-    //filtersLayout->setContentsMargins();
 
     //Table
     table = new QTableWidget(this);
@@ -175,19 +174,6 @@ bool MainWindow::defaultPathFileExists(const char* name){
     struct stat fileInfo;
     return stat(name, &fileInfo) == 0;
 }
-
-/*void changeDefaultPath(string& path){
-
-    ofstream configFile;
-    configFile.open("DefaultPath.cfg");
-    if (!configFile.is_open()) {
-            cerr << "Could not open the file - '"
-                 << "DefaultPath.cfg" << "'" << endl;
-            exit(EXIT_FAILURE);
-    }
-    configFile << path;
-    configFile.close();
-}*/
 
 void MainWindow::changeDB()
 {
