@@ -18,14 +18,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     iomanager.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    newtaskdialog.cpp
 
 HEADERS += \
     iomanager.h \
-    mainwindow.h
+    mainwindow.h \
+    newtaskdialog.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    newtaskdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
