@@ -149,7 +149,7 @@ void MainWindow::newDatafile()
 }
 
 string MainWindow::readDefaultPath(){
-    if(defaultPathFileExists(configDBFile)){
+    if(defaultPathConfigFileExists(configDBFile)){
         ifstream configFile(configDBFile);
         if (!configFile.is_open()) {
                 cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
@@ -171,7 +171,7 @@ string MainWindow::readDefaultPath(){
     }
 }
 
-bool MainWindow::defaultPathFileExists(const char* name){
+bool MainWindow::defaultPathConfigFileExists(const char* name){
     struct stat fileInfo;
     return stat(name, &fileInfo) == 0;
 }
@@ -316,10 +316,10 @@ int MainWindow::getWeekNumber(tm t)
     mauxdate =  gmtime(&nnow);
 
     int julian = t.tm_yday;  // Jan 1 = 1, Jan 2 = 2, etc...
-    int dow = t.tm_wday;     // Sun = 0, Mon = 1, etc...
-    int dowJan1 = mauxdate->tm_wday;   // find out first of year's day
-    int weekNum = ((julian + 6) / 7);   // probably better.  CHECK THIS LINE. (See comments.)
-    if (dow < dowJan1){                 // adjust for being after Saturday of week #1
+    int dow = t.tm_wday;  // Sun = 0, Mon = 1, etc...
+    int dowJan1 = mauxdate->tm_wday;  // find out first of year's day
+    int weekNum = ((julian + 6) / 7);
+    if (dow < dowJan1){  // adjust for being after Saturday of week #1
         ++weekNum;
     }
     return weekNum;

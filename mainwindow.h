@@ -28,8 +28,8 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow();
-    void enableAddTask();
-    inline void setPath(string path)
+    void enableAddTask(); //method to enable Add Task button on new database file creation (from createdatafiledialog class)
+    inline void setPath(string path) //method to change the default path, updating the configDBFile too
     {
         ofstream configFile;
         configFile.open(configDBFile);
@@ -41,8 +41,8 @@ public:
         configFile.close();
         this->path = path;
     }
-    string path;
-    static constexpr const char* configDBFile = "DefaultDBPath.cfg";
+
+    static constexpr const char* configDBFile = "DefaultDBPath.cfg"; //global static variable for the configDBFile default database path
     ~MainWindow();
 
 private slots:
@@ -57,13 +57,16 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
-    void createMenus();
-    void createFilters(QHBoxLayout *layout);
-    void initializeTable();
-    static string readDefaultPath();
-    static bool defaultPathFileExists(const char* name);
+    string path; //string were is saved the default database file path (read by the configDBFile) on program startup, new db file creation or db change
+    void createMenus(); //method for menus creation
+    void createFilters(QHBoxLayout *layout); //method for filters creation
+    void initializeTable(); //method to initialize the output table on the program startup
+    static string readDefaultPath(); //static method to read the default path of database file from the configDBFile configuration file.
+                                    //return the path as a string
+    static bool defaultPathConfigFileExists(const char* name); //static method that checks if the configDBFile exists
     int getWeekNumber(tm t);
-    void updateTable(vector<string*> data);
+    void updateTable(vector<string*> data); //method that is in charge of updating the output table when something changes (es. task add, db file change)
+    //Ui components
     QRadioButton *rb_all;
     QRadioButton *rb_overdue;
     QRadioButton *rb_today;

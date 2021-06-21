@@ -2,11 +2,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-IOManager::IOManager()
-{
-
-}
-
 string* r = nullptr;
 string* temp = nullptr;
 
