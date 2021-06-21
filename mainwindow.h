@@ -7,16 +7,18 @@
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QTableWidget>
+#include <QMessageBox>
 #include <string>
 #include <vector>
 #include <ctime>
 #include <sstream>
 #include <iomanip>
 #include <QFileDialog>
+#include "iomanager.h"
 
 using namespace std;
 
-namespace Ui { //semplificazione namespace
+namespace Ui {
 class MainWindow;
 }
 
@@ -26,7 +28,21 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow();
-    inline void setPath(string path){ this->path = path; }
+    void enableAddTask();
+    inline void setPath(string path)
+    {
+        ofstream configFile;
+        configFile.open(configDBFile);
+        if (!configFile.is_open()) {
+               cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
+               exit(EXIT_FAILURE);
+        }
+        configFile << path;
+        configFile.close();
+        this->path = path;
+    }
+    string path;
+    static constexpr const char* configDBFile = "DefaultDBPath.cfg";
     ~MainWindow();
 
 private slots:
@@ -34,7 +50,7 @@ private slots:
     void changeDB();
     void exitProgram();
     void newDatafile();
-    void cellSelected(int nRow, int nCol);
+    void cellSelected(int nRow);
 
 public slots:
     void filter();
@@ -44,10 +60,10 @@ private:
     void createMenus();
     void createFilters(QHBoxLayout *layout);
     void initializeTable();
-    void readDefaultPath();
+    static string readDefaultPath();
+    static bool defaultPathFileExists(const char* name);
     int getWeekNumber(tm t);
     void updateTable(vector<string*> data);
-    string path;
     QRadioButton *rb_all;
     QRadioButton *rb_overdue;
     QRadioButton *rb_today;

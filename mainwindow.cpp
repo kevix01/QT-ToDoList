@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "iomanager.h"
 #include <QMainWindow>
+#include "newtaskdialog.h"
+#include "createdatafiledialog.h"
 #include <sstream>
 #include <fstream>
 #include <QHeaderView>
@@ -10,8 +13,8 @@
 
 MainWindow::MainWindow()
 {
-    // default database file path (local program folder)
-    path = "database.cfg";
+    // read the default path from the <configDBFile> file
+    path = readDefaultPath();
 
     QWidget *widget = new QWidget;
     setCentralWidget(widget);
@@ -146,11 +149,10 @@ void MainWindow::newDatafile()
 }
 
 string MainWindow::readDefaultPath(){
-    if(defaultPathFileExists("DefaultPath.cfg")){
-        ifstream configFile("DefaultPath.cfg");
+    if(defaultPathFileExists(configDBFile)){
+        ifstream configFile(configDBFile);
         if (!configFile.is_open()) {
-                cerr << "Could not open the file - '"
-                     << "DefaultPath.cfg" << "'" << endl;
+                cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
                 exit(EXIT_FAILURE);
         }
         string temp;
@@ -159,10 +161,9 @@ string MainWindow::readDefaultPath(){
         return temp;
     } else {
         ofstream configFile;
-        configFile.open("DefaultPath.cfg");
+        configFile.open(configDBFile);
         if (!configFile.is_open()) {
-                cerr << "Could not open the file - '"
-                     << "DefaultPath.cfg" << "'" << endl;
+                cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
                 exit(EXIT_FAILURE);
         }
         configFile << "";
@@ -187,13 +188,11 @@ void MainWindow::changeDB()
     if (dlg.exec()){
         fileNames = dlg.selectedFiles();
         string path = ((QString)fileNames.at(0)).toUtf8().constData();
-        if (path.find("DefaultPath.cfg") != std::string::npos) {
+        if (path.find(configDBFile) != std::string::npos) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Error");
-            msgBox.setText("Wrong database file (DefaultPath.cfg). Select a valid one.");
+            msgBox.setText("Wrong database file. \nSelect a valid one!");
             msgBox.setStandardButtons(QMessageBox::Ok);
-            //msgBox.addButton(QMessageBox::No);
-            //msgBox.setDefaultButton(QMessageBox::No);
             if(msgBox.exec() == QMessageBox::Ok)
               return;
         } else {
