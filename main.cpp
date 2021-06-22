@@ -6,9 +6,9 @@
 
 void signalHandler(int signum){
     signal(signum, SIG_DFL);
-    QMessageBox::critical(nullptr, "App crashed", "The application has encountered an error! \nDatabase file could be corrupted. \n"
-                                                  "Solutions: \n1.Try restarting the app. \n2.Delete 'DefaultDBPath.cfg' file to reset the app settings "
-                                                  "(NOTE: this will not delete your database files!)");
+    QMessageBox::critical(nullptr, "App crashed", QString("The application has encountered an error! \nDatabase file could be corrupted. \n"
+                                                  "Solutions: \n1.Try restarting the app. \n2.Delete '%1' file to reset the app settings "
+                                                  "(NOTE: this will not delete your database files!)").arg(MainWindow::configDBFile));
 }
 
 int main(int argc, char *argv[])

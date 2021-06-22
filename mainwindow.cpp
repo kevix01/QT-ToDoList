@@ -133,7 +133,7 @@ void MainWindow::initializeTable()
 
 void MainWindow::addTask()
 {
-    NewTaskDialog dlg;
+    NewTaskDialog dlg(QString("Task Adding"));
     dlg.setModal(true);
     dlg.setPath(path);
     dlg.setOrigin(this);
@@ -191,7 +191,7 @@ void MainWindow::changeDB()
         if (path.find(configDBFile) != std::string::npos) {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Error");
-            msgBox.setText("Wrong database file. \nSelect a valid one!");
+            msgBox.setText(QString("Wrong database file (%1) \nSelect a valid one!").arg(configDBFile));
             msgBox.setStandardButtons(QMessageBox::Ok);
             if(msgBox.exec() == QMessageBox::Ok)
               return;
@@ -217,7 +217,7 @@ void MainWindow::exitProgram()
 
 void MainWindow::cellSelected(int nRow)
 {
-    NewTaskDialog dlg;
+    NewTaskDialog dlg(QString("Task Managing"));
     dlg.setModal(true);
     dlg.setData(table->item(nRow, 1)->text().toUtf8().constData(), table->item(nRow, 2)->text().toUtf8().constData(), table->item(nRow, 3)->text().toUtf8().constData(), table->item(nRow, 4)->text().toUtf8().constData());
     dlg.setPath(path);
@@ -317,10 +317,9 @@ int MainWindow::getWeekNumber(tm t)
 
     int julian = t.tm_yday;  // Jan 1 = 1, Jan 2 = 2, etc...
     int dow = t.tm_wday;  // Sun = 0, Mon = 1, etc...
-    int dowJan1 = mauxdate->tm_wday;  // find out first of year's day
     int weekNum = ((julian + 6) / 7);
-    if (dow < dowJan1){  // adjust for being after Saturday of week #1
-        ++weekNum;
+    if (dow == 0){  // adjust for being after Saturday of week #1
+        --weekNum;
     }
     return weekNum;
 }

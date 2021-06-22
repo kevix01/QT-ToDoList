@@ -30,7 +30,7 @@ vector<string*> IOManager::readFile(string path, IOManager& mng)
         while(!infile.eof()){
             getline(infile, str);
             if(str.length()>0){
-                v = IOManager::split(str, ';');
+                v = IOManager::split(str, IOManager::regexChar);
                 temp = new string [v.size()];
                 for(unsigned int i = 0; i<v.size();i++)
                     temp[i] = v.at(i);

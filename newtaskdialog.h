@@ -14,12 +14,12 @@ namespace Ui { //semplified namespace
 class NewTaskDialog;
 }
 
-class NewTaskDialog : public QDialog
+class NewTaskDialog : public QDialog  //class used for task adding or managing (change/delete)
 {
     Q_OBJECT
 
 public:
-    explicit NewTaskDialog(QWidget *parent = 0); //class constructor
+    explicit NewTaskDialog(QString dialogTitle, QWidget *parent = 0); //class constructor that takes as parameter the Dialog title to set
     void setData(string duedate, string title, string percent, string description);  //method used to update data on a certain table's cell
     void setPath(string path); //take the path from MainWindow
     inline void setOrigin(MainWindow *origin){ this->origin = origin; } //method to set the origin dialog (MainWindow)

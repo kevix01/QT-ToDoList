@@ -24,6 +24,7 @@ public:
     static bool exists(string path); //static method that finds if the database file exists
     vector <string*> data; //vector of string pointers (to array of strings) to store tasks data
     vector <string> dates; //vector of string used to manage the dates of each task (in MainWindow class)
+    static constexpr const char regexChar = '|'; //regex char value used for data separation
 };
 
 #endif // IOMANAGER_H
