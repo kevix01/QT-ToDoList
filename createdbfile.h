@@ -1,5 +1,5 @@
-#ifndef CREATEDATAFILEDIALOG_H
-#define CREATEDATAFILEDIALOG_H
+#ifndef CREATEDBFILE_H
+#define CREATEDBFILE_H
 
 #include <QDialog>
 #include <string>
@@ -13,14 +13,14 @@ namespace Ui {
 class CreateDatafileDialog;
 }
 
-class CreateDatafileDialog : public QDialog
+class CreateDbFile : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CreateDatafileDialog(QWidget *parent = 0);
+    explicit CreateDbFile(QWidget *parent = 0);
     inline void setOrigin(MainWindow *origin){ this->origin = origin; }
-    ~CreateDatafileDialog();
+    ~CreateDbFile();
 
 private slots:
     void on_name_ed_textChanged();
@@ -36,4 +36,4 @@ private:
     MainWindow *origin;
 };
 
-#endif // CREATEDATAFILEDIALOG_H
+#endif // CREATEDBFILE_H

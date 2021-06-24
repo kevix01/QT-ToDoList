@@ -1,40 +1,41 @@
-#include "createdatafiledialog.h"
-#include "ui_createdatafiledialog.h"
+#include "createdbfile.h"
+#include "ui_createdbfile.h"
 
-CreateDatafileDialog::CreateDatafileDialog(QWidget *parent) :
+CreateDbFile::CreateDbFile(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CreateDatafileDialog)
 {
     ui->setupUi(this);
     ui->folder_ed->setReadOnly(true);
     ui->createbtn->setEnabled(false);
+    this->setWindowTitle("New Database File");
 }
 
-CreateDatafileDialog::~CreateDatafileDialog()
+CreateDbFile::~CreateDbFile()
 {
     delete ui;
 }
 
 
-void CreateDatafileDialog::on_pushButton_3_clicked()
+void CreateDbFile::on_pushButton_3_clicked()
 {
     this->close();
 }
 
 
-void CreateDatafileDialog::on_name_ed_textChanged()
+void CreateDbFile::on_name_ed_textChanged()
 {
     updateOutputLabel();
     checkFields();
 }
 
-void CreateDatafileDialog::on_folder_ed_textChanged()
+void CreateDbFile::on_folder_ed_textChanged()
 {
     updateOutputLabel();
     checkFields();
 }
 
-void CreateDatafileDialog::updateOutputLabel(){
+void CreateDbFile::updateOutputLabel(){
     string sfolder(ui->folder_ed->text().toUtf8().constData());
     string stitle(ui->name_ed->text().toUtf8().constData());
     QString outputstringlbl = QString::fromStdString(sfolder + QString(QDir::separator()).toUtf8().constData() + stitle + ".cfg");
@@ -42,7 +43,7 @@ void CreateDatafileDialog::updateOutputLabel(){
 }
 
 
-void CreateDatafileDialog::checkFields(){
+void CreateDbFile::checkFields(){
     string sfolder(ui->folder_ed->text().toUtf8().constData());
     string stitle(ui->name_ed->text().toUtf8().constData());
 
@@ -53,7 +54,7 @@ void CreateDatafileDialog::checkFields(){
     }
 }
 
-void CreateDatafileDialog::on_createbtn_clicked()
+void CreateDbFile::on_createbtn_clicked()
 {
     string sfolder(ui->folder_ed->text().toUtf8().constData());
     string stitle(ui->name_ed->text().toUtf8().constData());
@@ -63,7 +64,7 @@ void CreateDatafileDialog::on_createbtn_clicked()
     this->close();
 }
 
-void CreateDatafileDialog::on_examinebtn_clicked()
+void CreateDbFile::on_examinebtn_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), NULL, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui->folder_ed->setText(dir);

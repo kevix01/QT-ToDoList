@@ -1,7 +1,7 @@
-#include "newtaskdialog.h"
-#include "ui_newtaskdialog.h"
+#include "taskmanager.h"
+#include "ui_taskmanager.h"
 
-NewTaskDialog::NewTaskDialog(QString dialogTitle, QWidget *parent) :
+TaskManager::TaskManager(QString dialogTitle, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewTaskDialog)
 {
@@ -22,12 +22,12 @@ NewTaskDialog::NewTaskDialog(QString dialogTitle, QWidget *parent) :
     this->newTask = true;
 }
 
-void NewTaskDialog::setPath(string path)
+void TaskManager::setPath(string path)
 {
     this->path = path;
 }
 
-void NewTaskDialog::setData(string duedate, string title, string percent, string description)
+void TaskManager::setData(string duedate, string title, string percent, string description)
 {
     this->oldDuedate = duedate;
     this->oldTitle = title;
@@ -51,20 +51,20 @@ void NewTaskDialog::setData(string duedate, string title, string percent, string
 }
 
 
-NewTaskDialog::~NewTaskDialog()
+TaskManager::~TaskManager()
 {
     delete ui;
 }
 
 
-void NewTaskDialog::on_slider_valueChanged(int value)
+void TaskManager::on_slider_valueChanged(int value)
 {
     ui->percent_lbl->setText(QString::fromStdString(to_string(value)+"% Compl."));
     checkFields();
 }
 
 
-void NewTaskDialog::checkFields(){
+void TaskManager::checkFields(){
     string sdatepicker(ui->datepicker->text().toUtf8().constData());
     string stitle(ui->title_et->text().toUtf8().constData());
     string spercent(ui->percent_lbl->text().toUtf8().constData());
@@ -77,22 +77,22 @@ void NewTaskDialog::checkFields(){
     else
         ui->savebtn->setEnabled(true);
 }
-void NewTaskDialog::on_description_ed_textChanged()
+void TaskManager::on_description_ed_textChanged()
 {
     checkFields();
 }
 
-void NewTaskDialog::on_title_et_textChanged()
+void TaskManager::on_title_et_textChanged()
 {
     checkFields();
 }
 
-void NewTaskDialog::on_datepicker_userDateChanged()
+void TaskManager::on_datepicker_userDateChanged()
 {
     checkFields();
 }
 
-void NewTaskDialog::on_savebtn_clicked()
+void TaskManager::on_savebtn_clicked()
 {
     IOManager mng;
     vector<string*> lines = IOManager::readFile(path,mng);
@@ -144,12 +144,12 @@ void NewTaskDialog::on_savebtn_clicked()
     }
 }
 
-void NewTaskDialog::on_cancelbtn_clicked()
+void TaskManager::on_cancelbtn_clicked()
 {
     this->close();
 }
 
-void NewTaskDialog::on_deletebtn_clicked()
+void TaskManager::on_deletebtn_clicked()
 {
     IOManager mng;
     vector<string*> lines = IOManager::readFile(path,mng);

@@ -2,8 +2,8 @@
 #include "ui_mainwindow.h"
 #include "iomanager.h"
 #include <QMainWindow>
-#include "newtaskdialog.h"
-#include "createdatafiledialog.h"
+#include "taskmanager.h"
+#include "createdbfile.h"
 #include <sstream>
 #include <fstream>
 #include <QHeaderView>
@@ -133,7 +133,7 @@ void MainWindow::initializeTable()
 
 void MainWindow::addTask()
 {
-    NewTaskDialog dlg(QString("Task Adding"));
+    TaskManager dlg(QString("Task Adding"));
     dlg.setModal(true);
     dlg.setPath(path);
     dlg.setOrigin(this);
@@ -142,7 +142,7 @@ void MainWindow::addTask()
 
 void MainWindow::newDatafile()
 {
-    CreateDatafileDialog dlg;
+    CreateDbFile dlg;
     dlg.setModal(true);
     dlg.setOrigin(this);
     dlg.exec();
@@ -217,7 +217,7 @@ void MainWindow::exitProgram()
 
 void MainWindow::cellSelected(int nRow)
 {
-    NewTaskDialog dlg(QString("Task Managing"));
+    TaskManager dlg(QString("Task Managing"));
     dlg.setModal(true);
     dlg.setData(table->item(nRow, 1)->text().toUtf8().constData(), table->item(nRow, 2)->text().toUtf8().constData(), table->item(nRow, 3)->text().toUtf8().constData(), table->item(nRow, 4)->text().toUtf8().constData());
     dlg.setPath(path);

@@ -16,22 +16,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    createdatafiledialog.cpp \
+    createdbfile.cpp \
     iomanager.cpp \
     main.cpp \
     mainwindow.cpp \
-    newtaskdialog.cpp
+    taskmanager.cpp
 
 HEADERS += \
-    createdatafiledialog.h \
+    createdbfile.h \
     iomanager.h \
     mainwindow.h \
-    newtaskdialog.h
+    taskmanager.h
 
 FORMS += \
-    createdatafiledialog.ui \
+    createdbfile.ui \
     mainwindow.ui \
-    newtaskdialog.ui
+    taskmanager.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
