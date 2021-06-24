@@ -152,8 +152,16 @@ string MainWindow::readDefaultPath(){
     if(defaultPathConfigFileExists(configDBFile)){
         ifstream configFile(configDBFile);
         if (!configFile.is_open()) {
-                cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
-                exit(EXIT_FAILURE);
+                //cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Critical Error");
+                msgBox.setText(QString("Cannot read config file (%1) \nThere may be a permissions problem.\nSolutions:\n"
+                                       "1.Restart the app;"
+                                       "\n2.Close any other app related to the file mentioned above;"
+                                       "\n3.Delete the config file to reset program settings \n(NOTE: this will not delete your database files!)").arg(configDBFile));
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                if(msgBox.exec() == QMessageBox::Ok)
+                  exit(EXIT_FAILURE);
         }
         string temp;
         getline (configFile,temp);
@@ -163,8 +171,16 @@ string MainWindow::readDefaultPath(){
         ofstream configFile;
         configFile.open(configDBFile);
         if (!configFile.is_open()) {
-                cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
-                exit(EXIT_FAILURE);
+                //cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("Critical Error");
+                msgBox.setText(QString("Cannot read config file (%1) \nThere may be a permissions problem.\nSolutions:\n"
+                                       "1.Restart the app;"
+                                       "\n2.Close any other app related to the file mentioned above;"
+                                       "\n3.Delete the config file to reset program settings \n(NOTE: this will not delete your database files!)").arg(configDBFile));
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                if(msgBox.exec() == QMessageBox::Ok)
+                  exit(EXIT_FAILURE);
         }
         configFile << "";
         return "";

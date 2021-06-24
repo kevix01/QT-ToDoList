@@ -41,7 +41,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="examinebtn">
+  <widget class="QPushButton" name="browsebtn">
    <property name="geometry">
     <rect>
      <x>340</x>
@@ -51,7 +51,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Examine</string>
+    <string>Browse</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -125,7 +125,7 @@
     <string>Create</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="cancelbtn">
    <property name="geometry">
     <rect>
      <x>240</x>

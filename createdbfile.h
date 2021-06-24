@@ -1,4 +1,4 @@
-#ifndef CREATEDBFILE_H
+﻿#ifndef CREATEDBFILE_H
 #define CREATEDBFILE_H
 
 #include <QDialog>
@@ -24,10 +24,10 @@ public:
 
 private slots:
     void on_name_ed_textChanged();
-    void on_pushButton_3_clicked();
+    void on_cancelbtn_clicked();
     void on_folder_ed_textChanged();
     void on_createbtn_clicked();
-    void on_examinebtn_clicked();
+    void on_browsebtn_clicked();
 
 private:
     Ui::CreateDatafileDialog *ui;

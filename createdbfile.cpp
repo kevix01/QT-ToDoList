@@ -17,7 +17,7 @@ CreateDbFile::~CreateDbFile()
 }
 
 
-void CreateDbFile::on_pushButton_3_clicked()
+void CreateDbFile::on_cancelbtn_clicked()
 {
     this->close();
 }
@@ -64,7 +64,7 @@ void CreateDbFile::on_createbtn_clicked()
     this->close();
 }
 
-void CreateDbFile::on_examinebtn_clicked()
+void CreateDbFile::on_browsebtn_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), NULL, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui->folder_ed->setText(dir);

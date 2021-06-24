@@ -34,8 +34,16 @@ public:
         ofstream configFile;
         configFile.open(configDBFile);
         if (!configFile.is_open()) {
-               cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
-               exit(EXIT_FAILURE);
+               //cerr << "Could not open the configuration file! (" << configDBFile <<")" << endl;
+               QMessageBox msgBox;
+               msgBox.setWindowTitle("Error");
+               msgBox.setText(QString("Cannot update config file (%1) \nThere may be a permissions problem.\nSolutions:\n"
+                                      "1.Try again or restart the app;"
+                                      "\n2.Close any other app related to the file mentioned above;"
+                                      "\n3.Delete the config file to reset program settings \n(NOTE: this will not delete your database files!)").arg(configDBFile));
+               msgBox.setStandardButtons(QMessageBox::Ok);
+               if(msgBox.exec() == QMessageBox::Ok)
+                 return;
         }
         configFile << path;
         configFile.close();
