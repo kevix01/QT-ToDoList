@@ -15,7 +15,8 @@ SOURCES +=  \
             ../QT-ToDoList-App/taskmanager.cpp \
             iomanagertest.cpp \
             main.cpp \
-            mainwindowtest.cpp
+            mainwindowtest.cpp \
+            taskmanagertest.cpp
 
 HEADERS += \
     ../QT-ToDoList-App/createdbfile.h \
@@ -23,7 +24,8 @@ HEADERS += \
     ../QT-ToDoList-App/mainwindow.h \
     ../QT-ToDoList-App/taskmanager.h \ \
     iomanagertest.h \
-    mainwindowtest.h
+    mainwindowtest.h \
+    taskmanagertest.h
 
 FORMS += \
     ../QT-ToDoList-App/createdbfile.ui \
@@ -32,3 +34,9 @@ FORMS += \
 
 INCLUDEPATH += $$PWD/../QT-ToDoList-App
 DEPENDPATH += $$PWD/../QT-ToDoList-App
+
+copydata.commands = $(COPY_DIR) $$PWD/RegularDbTest.cfg $$OUT_PWD
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata

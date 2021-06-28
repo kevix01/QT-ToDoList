@@ -1,5 +1,6 @@
 #include <QtTest>
 #include <QApplication>
+#include <QAction>
 #include <mainwindow.h>
 
 class MainWindowTest: public QObject
@@ -7,7 +8,7 @@ class MainWindowTest: public QObject
     Q_OBJECT
 
 public:
-    MainWindowTest();
+    MainWindowTest() = default;
     ~MainWindowTest();
 
 private:
@@ -15,16 +16,15 @@ private:
     MainWindow* m {nullptr};
 
 private slots:
-    void initTestCase()
-    {
-        qDebug() << "Starting tests about Ui components...";
-        m->show();
-    }
+    void initTestCase();
 
     void UiComponentsConstructionTest();
 
+    void TableComponentTest();
+
     void cleanupTestCase()
     {
-        qDebug("Called after myFirstTest and mySecondTest.");
+        qDebug("Components' integrity check finished.");
+        m->hide();
     }
 };

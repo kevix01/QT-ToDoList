@@ -1,4 +1,5 @@
 #include <QtTest>
+#include <iomanager.h>
 
 class IOManagerTest: public QObject
 {
@@ -7,12 +8,13 @@ class IOManagerTest: public QObject
 private slots:
     void initTestCase()
     {
-        qDebug("Called before everything else.");
+        qDebug("Starting I/O methods tests...");
     }
     void splitMethodTest();
+    void readFileMethodTest();
 
     void cleanupTestCase()
     {
-        qDebug("Called after myFirstTest and mySecondTest.");
+        qDebug("I/O methods integrity check finished.");
     }
 };

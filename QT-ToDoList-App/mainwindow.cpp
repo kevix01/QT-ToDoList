@@ -249,8 +249,8 @@ void MainWindow::updateTable(vector<string*> data){
         QCheckBox *qcb = new QCheckBox;
         qcb->setStyleSheet(QStringLiteral("QCheckBox::indicator {subcontrol-position: center;}"));
         // Set the checkbox as not editable and check it if necessary
-        qcb->setAttribute(Qt::WA_TransparentForMouseEvents, true);
-        qcb->setFocusPolicy(Qt::NoFocus);
+        qcb -> setAttribute(Qt::WA_TransparentForMouseEvents, true);
+        qcb -> setFocusPolicy(Qt::NoFocus);
         qcb -> setChecked(stoi(data.at(i)[2]) == 100);
 
         table -> setAlternatingRowColors(true);

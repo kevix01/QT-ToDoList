@@ -40,6 +40,7 @@ private slots: //methods for dialog's components actions (input by user)
     void on_deletebtn_clicked();
 
 private:
+    friend class TaskManagerTest;
     void checkFields(); //method to check field of the "task-add" dialog to check validity
     Ui::NewTaskDialog *ui;
     bool newTask;
