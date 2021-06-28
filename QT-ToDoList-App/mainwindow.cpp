@@ -10,7 +10,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-
 MainWindow::MainWindow()
 {
     // read the default path from the <configDBFile> file

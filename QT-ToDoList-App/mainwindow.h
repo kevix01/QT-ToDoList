@@ -64,6 +64,7 @@ public slots:
     void filter();
 
 private:
+    friend class MainWindowTest;
     Ui::MainWindow *ui;
     string path; //string were is saved the default database file path (read by the configDBFile) on program startup, new db file creation or db change
     void createMenus(); //method for menus creation
