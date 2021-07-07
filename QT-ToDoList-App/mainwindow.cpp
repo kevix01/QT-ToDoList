@@ -86,7 +86,8 @@ void MainWindow::createFilters(QHBoxLayout *layout)
     rb_thisweek->setText(tr("&This Week"));
     cb_completed->setText(tr("&Not Completed"));
 
-    //connette le azioni al metodo di filtraggio risultati
+    //connect actions of filters' components to filter() method
+    //in order to update the output
     connect(rb_all,SIGNAL(clicked()),this,SLOT(filter()));
     connect(rb_overdue,SIGNAL(clicked()),this,SLOT(filter()));
     connect(rb_today,SIGNAL(clicked()),this,SLOT(filter()));
@@ -234,13 +235,13 @@ void MainWindow::cellSelected(int nRow)
 {
     TaskManager dlg(QString("Task Managing"));
     dlg.setModal(true);
-    dlg.setData(table->item(nRow, 1)->text().toUtf8().constData(), table->item(nRow, 2)->text().toUtf8().constData(), table->item(nRow, 3)->text().toUtf8().constData(), table->item(nRow, 4)->text().toUtf8().constData());
+    dlg.loadData(table->item(nRow, 1)->text().toUtf8().constData(), table->item(nRow, 2)->text().toUtf8().constData(), table->item(nRow, 3)->text().toUtf8().constData(), table->item(nRow, 4)->text().toUtf8().constData());
     dlg.setPath(path);
     dlg.setOrigin(this);
     dlg.exec();
 }
 
-void MainWindow::updateTable(vector<string*> data){
+void MainWindow::updateTable(const vector<string*>& data){
 
     table -> clearContents();
     table -> setRowCount(data.size());
@@ -341,7 +342,6 @@ int MainWindow::getWeekNumber(tm t)
 
 MainWindow::~MainWindow()
 {
-    //delete ui;
     delete rb_all;
     delete rb_overdue;
     delete rb_today;

@@ -75,7 +75,7 @@ private:
                                     //return the path as a string
     static bool defaultPathConfigFileExists(const char* name); //static method that checks if the configDBFile exists
     int getWeekNumber(tm t);
-    void updateTable(vector<string*> data); //method that is in charge of updating the output table when something changes (es. task add, db file change)
+    void updateTable(const vector<string*>& data); //method that is in charge of updating the output table when something changes (es. task add, db file change)
     //Ui components
     QRadioButton *rb_all;
     QRadioButton *rb_overdue;

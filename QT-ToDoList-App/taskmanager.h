@@ -20,8 +20,8 @@ class TaskManager : public QDialog  //class used for task adding or managing (ch
 
 public:
     explicit TaskManager(QString dialogTitle, QWidget *parent = 0); //class constructor that takes as parameter the Dialog title to set
-    void setData(string duedate, string title, string percent, string description);  //method used to update data on a certain table's cell
-    void setPath(string path); //take the path from MainWindow
+    void loadData(const string& duedate, const string& title, const string& percent, const string& description);  //method used to load data of a certain table's cell
+    void setPath(const string& path); //take the path from MainWindow
     inline void setOrigin(MainWindow *origin){ this->origin = origin; } //method to set the origin dialog (MainWindow)
     //string values to compare fields changes with the old ones
     string oldDuedate;

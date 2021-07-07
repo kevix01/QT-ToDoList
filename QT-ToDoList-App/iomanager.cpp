@@ -2,10 +2,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-string* r = nullptr;
-string* temp = nullptr;
-
-bool IOManager::exists(string path){
+bool IOManager::exists(const string& path){
     ifstream infile;
     infile.exceptions ( ifstream::failbit | ifstream::badbit );
 
@@ -18,9 +15,10 @@ bool IOManager::exists(string path){
     }
 }
 
-vector<string*> IOManager::readFile(string path, IOManager& mng)
+vector<string*> IOManager::readFile(const string& path, IOManager& mng)
 {
     vector<string> v;
+    string* temp;
     string str;
     ifstream infile;
     infile.exceptions ( ifstream::failbit | ifstream::badbit );
@@ -38,20 +36,18 @@ vector<string*> IOManager::readFile(string path, IOManager& mng)
             }
         }
         infile.close();
-    }catch (const ifstream::failure& e) {
-
-    }
+    }catch (const ifstream::failure&){}
     return mng.data;
 }
 
-void IOManager::writeFile(string path, string file)
+void IOManager::writeFile(const string& path,const string& file)
 {
     ofstream outfile(path);
     outfile << file;
     outfile.close();
 }
 
-vector<string> IOManager::split(string l, char regex)
+vector<string> IOManager::split(const string& l, char regex)
 {
     vector<string> vect;
     stringstream ss(l);

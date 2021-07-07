@@ -1,3 +1,4 @@
+#include <memory>
 #include "taskmanager.h"
 #include "ui_taskmanager.h"
 
@@ -22,25 +23,25 @@ TaskManager::TaskManager(QString dialogTitle, QWidget *parent) :
     this->newTask = true;
 }
 
-void TaskManager::setPath(string path)
+void TaskManager::setPath(const string& path)
 {
     this->path = path;
 }
 
-void TaskManager::setData(string duedate, string title, string percent, string description)
+void TaskManager::loadData(const string& duedate, const string& title, const string& percent, const string& description)
 {
     this->oldDuedate = duedate;
     this->oldTitle = title;
     this->oldPercent = percent;
     this->oldDescription = description;
     vector<string> v = IOManager::split(duedate, '/');
-    unsigned int i=0;
-    string *sdate = new string[v.size()];
+    int i=0;
+    unique_ptr<string[]> sdate(new string[v.size()]);
     for(auto it : v){
         sdate[i] = v[i];
         i++;
     }
-    QDate *sd = new QDate(stoi(sdate[0]), stoi(sdate[1]), stoi(sdate[2]));
+    unique_ptr<QDate> sd(new QDate(stoi(sdate[0]), stoi(sdate[1]), stoi(sdate[2])));
     ui->datepicker->setDate(*sd);
     ui->title_et->setText(QString::fromStdString(title));
     ui->slider->setValue(stoi(percent));
