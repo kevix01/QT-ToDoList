@@ -13,8 +13,10 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <iostream>
 #include <QFileDialog>
 #include "iomanager.h"
+#include "tasklist.h"
 
 using namespace std;
 
@@ -28,7 +30,8 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow();
-    void enableAddTask(); //method to enable Add Task button on new database file creation (from createdatafiledialog class)
+    void enableAddList();
+    void enableAddTask();//method to enable Add Task button on new database file creation (from createdatafiledialog class)
     inline void setPath(string path) //method to change the default path, updating the configDBFile too
     {
         ofstream configFile;
@@ -59,6 +62,7 @@ private slots:
     void exitProgram();
     void newDatafile();
     void cellSelected(int nRow);
+    void setViewList();
 
 public slots:
     void filter();
@@ -75,6 +79,9 @@ private:
                                     //return the path as a string
     static bool defaultPathConfigFileExists(const char* name); //static method that checks if the configDBFile exists
     int getWeekNumber(tm t);
+    void initializeLists(const string& path, IOManager& mng);
+    void initializeTasks(const vector<string*>& data);
+    void resetLists();
     void updateTable(const vector<string*>& data); //method that is in charge of updating the output table when something changes (es. task add, db file change)
     //Ui components
     QRadioButton *rb_all;
@@ -86,10 +93,22 @@ private:
     QStringList tableHeader;
     QMenu *EditMenu;
     QMenu *OptionsMenu;
+    QMenu *ListMenu;
     QAction *newDatafileAct;
     QAction *addTaskAct;
     QAction *changeDBAct;
     QAction *exitProgramAct;
+    QAction *allLists;
+    QAction *list1;
+    QAction *list2;
+    QAction *list3;
+    QAction *list4;
+    QAction *list5;
+    TaskList* l1 {new TaskList()};
+    TaskList* l2 {new TaskList()};
+    TaskList* l3 {new TaskList()};
+    TaskList* l4 {new TaskList()};
+    TaskList* l5 {new TaskList()};
 };
 
 #endif // MAINWINDOW_H

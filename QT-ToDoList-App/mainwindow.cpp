@@ -40,15 +40,40 @@ MainWindow::MainWindow()
     widget -> setLayout(layout);
 
     setWindowTitle("ToDo List App - powered by QT");
-    setMinimumSize(480, 320);
-    resize(580, 480);
+    setMinimumSize(620, 320);
+    resize(680, 480);
 }
 
 void MainWindow::createMenus()
 {
     addTaskAct = new QAction(tr("&Add Task"), this);
+
+    allLists = new QAction(tr("&All"), this);
+    connect(allLists, &QAction::triggered, this, &MainWindow::setViewList);
+
+    list1 = new QAction(tr("&Empty"), this);
+    connect(list1, &QAction::triggered, this, &MainWindow::setViewList);
+
+    list2 = new QAction(tr("&Empty"), this);
+    connect(list2, &QAction::triggered, this, &MainWindow::setViewList);
+
+    list3 = new QAction(tr("&Empty"), this);
+    connect(list3, &QAction::triggered, this, &MainWindow::setViewList);
+
+    list4 = new QAction(tr("&Empty"), this);
+    connect(list4, &QAction::triggered, this, &MainWindow::setViewList);
+
+    list5 = new QAction(tr("&Empty"), this);
+    connect(list5, &QAction::triggered, this, &MainWindow::setViewList);
+
     if(IOManager::exists(path) == false){
         addTaskAct->setEnabled(false);
+        allLists->setEnabled(false);
+        list1->setEnabled(false);
+        list2->setEnabled(false);
+        list3->setEnabled(false);
+        list4->setEnabled(false);
+        list5->setEnabled(false);
     }
     addTaskAct -> setShortcuts(QKeySequence::New);
     connect(addTaskAct, &QAction::triggered, this, &MainWindow::addTask);
@@ -64,10 +89,17 @@ void MainWindow::createMenus()
 
     EditMenu = menuBar()->addMenu(tr("&Edit"));
     OptionsMenu = menuBar()->addMenu(tr("&Options"));
+    ListMenu = menuBar()->addMenu(tr("&List Selection"));
     EditMenu->addAction(addTaskAct);
     OptionsMenu->addAction(newDatafileAct);
     OptionsMenu->addAction(changeDBAct);
     OptionsMenu->addAction(exitProgramAct);
+    ListMenu->addAction(allLists);
+    ListMenu->addAction(list1);
+    ListMenu->addAction(list2);
+    ListMenu->addAction(list3);
+    ListMenu->addAction(list4);
+    ListMenu->addAction(list5);
 }
 
 
@@ -113,8 +145,8 @@ void MainWindow::createFilters(QHBoxLayout *layout)
 
 void MainWindow::initializeTable()
 {
-    table -> setColumnCount(5);
-    tableHeader << "Finished" << "DueDate" << "Title" << "% Complete" << "Description";
+    table -> setColumnCount(6);
+    tableHeader << "List" << "Finished" << "DueDate" << "Title" << "% Complete" << "Description";
     table -> setHorizontalHeaderLabels(tableHeader);
     table -> horizontalHeader()->setStretchLastSection(true);
     table -> verticalHeader() -> setVisible(false);
@@ -125,7 +157,8 @@ void MainWindow::initializeTable()
 
     IOManager mng;
     //inserting data
-    updateTable(IOManager::readFile(path,mng));
+   // updateTable(IOManager::readFile(path,mng));
+    initializeLists(path,mng);
 
     connect( table, SIGNAL( cellDoubleClicked (int, int) ),
      this, SLOT( cellSelected( int ) ) );
@@ -138,6 +171,10 @@ void MainWindow::addTask()
     dlg.setPath(path);
     dlg.setOrigin(this);
     dlg.exec();
+}
+
+void MainWindow::setViewList(){
+
 }
 
 void MainWindow::newDatafile()
@@ -213,13 +250,21 @@ void MainWindow::changeDB()
               return;
         } else {
             this->setPath(path);
+            this->resetLists();
             this->filter();
             valid = true;
 
         }
    }
-    if(valid)
+    if(valid){
         addTaskAct->setEnabled(true);
+        allLists->setEnabled(true);
+    }
+}
+
+void MainWindow::enableAddList(){
+    allLists->setEnabled(true);
+    enableAddTask();
 }
 
 void MainWindow::enableAddTask(){
@@ -228,6 +273,7 @@ void MainWindow::enableAddTask(){
 
 void MainWindow::exitProgram()
 {
+    //cout << addTaskAct->text().toUtf8().constData();
     exit(0);
 }
 
@@ -241,6 +287,91 @@ void MainWindow::cellSelected(int nRow)
     dlg.exec();
 }
 
+void MainWindow::initializeLists(const string& path, IOManager& mng){
+    vector<string*> data = IOManager::readFile(path,mng);
+    string temp;
+    /*l1->setName("");
+    l2->setName("");
+    l3->setName("");
+    l4->setName("");
+    l5->setName("");*/
+    for(unsigned int i = 0; i < data.size(); i++){
+        temp = data.at(i)[4];
+        if(temp != l1->getName() && l1->getName() == ""){
+            l1->setName(temp);
+            list1->setText(QString::fromStdString(string("&") + temp));
+            list1->setEnabled("true");
+        } else if(temp != l2->getName() && l2->getName() == ""){
+            l2->setName(temp);
+            list2->setText(QString::fromStdString(string("&") + temp));
+            list2->setEnabled("true");
+        } else if(temp != l3->getName() && l3->getName() == ""){
+            l3->setName(temp);
+            list3->setText(QString::fromStdString(string("&") + temp));
+            list3->setEnabled("true");
+        } else if(temp != l4->getName() && l4->getName() == ""){
+            l4->setName(temp);
+            list4->setText(QString::fromStdString(string("&") + temp));
+            list4->setEnabled("true");
+        } else if(temp != l5->getName() && l5->getName() == ""){
+            l5->setName(temp);
+            list5->setText(QString::fromStdString(string("&") + temp));
+            list5->setEnabled("true");
+        }
+    }
+
+    if(l1->getName() == ""){
+        list1->setText(QString::fromStdString(string("&Empty")));
+        list1->setEnabled(false);
+    }
+    if(l2->getName() == ""){
+        list2->setText(QString::fromStdString(string("&Empty")));
+        list2->setEnabled(false);
+    }
+    if(l3->getName() == ""){
+        list3->setText(QString::fromStdString(string("&Empty")));
+        list3->setEnabled(false);
+    }
+    if(l4->getName() == ""){
+        list4->setText(QString::fromStdString(string("&Empty")));
+        list4->setEnabled(false);
+    }
+    if(l5->getName() == ""){
+        list5->setText(QString::fromStdString(string("&Empty")));
+        list5->setEnabled(false);
+    }
+
+    initializeTasks(data);
+}
+
+void MainWindow::initializeTasks(const vector<string*>& data){
+    string temp;
+    for(unsigned int i = 0; i < data.size(); i++){
+        temp = data.at(i)[4];
+        if(temp == l1->getName()){
+            l1->addNewTask(data.at(i));
+        } else if(temp == l2->getName()){
+            l2->addNewTask(data.at(i));
+        } else if(temp == l3->getName()){
+            l3->addNewTask(data.at(i));
+        } else if(temp == l4->getName()){
+            l4->addNewTask(data.at(i));
+        } else if(temp == l5->getName()){
+            l5->addNewTask(data.at(i));
+        }
+    }
+    updateTable(data);
+}
+
+void MainWindow::resetLists(){
+    IOManager mng;
+    l1->reset();
+    l2->reset();
+    l3->reset();
+    l4->reset();
+    l5->reset();
+    initializeLists(path, mng);
+}
 void MainWindow::updateTable(const vector<string*>& data){
 
     table -> clearContents();
@@ -255,15 +386,16 @@ void MainWindow::updateTable(const vector<string*>& data){
         qcb -> setChecked(stoi(data.at(i)[2]) == 100);
 
         table -> setAlternatingRowColors(true);
-        table -> setCellWidget(i, 0, qcb);
+        table -> setItem(i, 0, new QTableWidgetItem(QString::fromStdString(data.at(i)[4])));
+        table -> setCellWidget(i, 1, qcb);
         QTableWidgetItem *qdd = new QTableWidgetItem(QString::fromStdString(data.at(i)[0]));
         qdd -> setTextAlignment(Qt::AlignCenter);
-        table -> setItem(i, 1, qdd);
-        table -> setItem(i, 2, new QTableWidgetItem(QString::fromStdString(data.at(i)[1])));
+        table -> setItem(i, 2, qdd);
+        table -> setItem(i, 3, new QTableWidgetItem(QString::fromStdString(data.at(i)[1])));
         QTableWidgetItem *qtwi = new QTableWidgetItem(QString::fromStdString(data.at(i)[2]));
         qtwi -> setTextAlignment(Qt::AlignCenter);
-        table -> setItem(i, 3, qtwi);
-        table -> setItem(i, 4, new QTableWidgetItem(QString::fromStdString(data.at(i)[3])));
+        table -> setItem(i, 4, qtwi);
+        table -> setItem(i, 5, new QTableWidgetItem(QString::fromStdString(data.at(i)[3])));
     }
 }
 

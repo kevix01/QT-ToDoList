@@ -20,12 +20,16 @@ SOURCES += \
     iomanager.cpp \
     main.cpp \
     mainwindow.cpp \
+    task.cpp \
+    tasklist.cpp \
     taskmanager.cpp
 
 HEADERS += \
     createdbfile.h \
     iomanager.h \
     mainwindow.h \
+    task.h \
+    tasklist.h \
     taskmanager.h
 
 FORMS += \

@@ -60,7 +60,7 @@ void CreateDbFile::on_createbtn_clicked()
     string stitle(ui->name_ed->text().toUtf8().constData());
     origin->setPath(sfolder + QString(QDir::separator()).toUtf8().constData() + stitle + ".cfg");
     origin->filter();
-    origin->enableAddTask();
+    origin->enableAddList();
     this->close();
 }
 
