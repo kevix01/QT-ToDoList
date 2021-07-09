@@ -13,7 +13,8 @@ void TaskManagerTest::taskLoadingTest()
     dlg.show();
 
     //importing data of first task trough setData() method
-    dlg.loadData(m->table->item(0, 1)->text().toUtf8().constData(), m->table->item(0, 2)->text().toUtf8().constData(), m->table->item(0, 3)->text().toUtf8().constData(), m->table->item(0, 4)->text().toUtf8().constData());
+    dlg.loadData(m->table->item(0, 2)->text().toUtf8().constData(), m->table->item(0, 3)->text().toUtf8().constData(),
+                 m->table->item(0, 4)->text().toUtf8().constData(), m->table->item(0, 5)->text().toUtf8().constData(), m->table->item(0, 1)->text().toUtf8().constData());
     //dlg.setPath("RegularDbTest.cfg");
 
     //cheking dialog's components

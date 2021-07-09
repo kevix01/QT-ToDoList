@@ -1,5 +1,6 @@
 #ifndef IOMANAGER_H
 #define IOMANAGER_H
+
 #include <fstream>
 #include <iostream>
 #include <sstream>

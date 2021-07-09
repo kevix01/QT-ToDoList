@@ -18,6 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     createdbfile.cpp \
     iomanager.cpp \
+    listadder.cpp \
+    listdeleter.cpp \
     main.cpp \
     mainwindow.cpp \
     task.cpp \
@@ -27,13 +29,18 @@ SOURCES += \
 HEADERS += \
     createdbfile.h \
     iomanager.h \
+    listadder.h \
+    listdeleter.h \
     mainwindow.h \
+    observer.h \
     task.h \
     tasklist.h \
     taskmanager.h
 
 FORMS += \
     createdbfile.ui \
+    listadder.ui \
+    listdeleter.ui \
     mainwindow.ui \
     taskmanager.ui
 

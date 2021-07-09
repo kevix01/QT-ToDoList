@@ -1,14 +1,17 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "iomanager.h"
 #include <QMainWindow>
-#include "taskmanager.h"
-#include "createdbfile.h"
 #include <sstream>
 #include <fstream>
+#include <string>
 #include <QHeaderView>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "iomanager.h"
+#include "taskmanager.h"
+#include "createdbfile.h"
+#include "listadder.h"
+#include "listdeleter.h"
 
 MainWindow::MainWindow()
 {
@@ -29,6 +32,15 @@ MainWindow::MainWindow()
     table = new QTableWidget(this);
     initializeTable();
 
+    // Models
+    IOManager mng;
+    l1->registerObserver(this);
+    l2->registerObserver(this);
+    l3->registerObserver(this);
+    l4->registerObserver(this);
+    l5->registerObserver(this);
+    initializeLists(path,mng);
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout -> setMargin(8);
     layout -> addLayout(filtersLayout);
@@ -48,26 +60,32 @@ void MainWindow::createMenus()
 {
     addTaskAct = new QAction(tr("&Add Task"), this);
 
+    addListAct = new QAction(tr("&Add List"), this);
+
+    deleteListAct = new QAction(tr("&Delete List"), this);
+
     allLists = new QAction(tr("&All"), this);
-    connect(allLists, &QAction::triggered, this, &MainWindow::setViewList);
+    connect(allLists, &QAction::triggered, this, [this]{MainWindow::setViewList(allLists->text().toUtf8().constData());});
 
     list1 = new QAction(tr("&Empty"), this);
-    connect(list1, &QAction::triggered, this, &MainWindow::setViewList);
+    connect(list1, &QAction::triggered, this, [this]{MainWindow::setViewList(list1->text().toUtf8().constData());});
 
     list2 = new QAction(tr("&Empty"), this);
-    connect(list2, &QAction::triggered, this, &MainWindow::setViewList);
+    connect(list2, &QAction::triggered, this, [this]{MainWindow::setViewList(list2->text().toUtf8().constData());});
 
     list3 = new QAction(tr("&Empty"), this);
-    connect(list3, &QAction::triggered, this, &MainWindow::setViewList);
+    connect(list3, &QAction::triggered, this, [this]{MainWindow::setViewList(list3->text().toUtf8().constData());});
 
     list4 = new QAction(tr("&Empty"), this);
-    connect(list4, &QAction::triggered, this, &MainWindow::setViewList);
+    connect(list4, &QAction::triggered, this, [this]{MainWindow::setViewList(list4->text().toUtf8().constData());});
 
     list5 = new QAction(tr("&Empty"), this);
-    connect(list5, &QAction::triggered, this, &MainWindow::setViewList);
+    connect(list5, &QAction::triggered, this, [this]{MainWindow::setViewList(list5->text().toUtf8().constData());});
 
     if(IOManager::exists(path) == false){
         addTaskAct->setEnabled(false);
+        addListAct->setEnabled(false);
+        deleteListAct->setEnabled(false);
         allLists->setEnabled(false);
         list1->setEnabled(false);
         list2->setEnabled(false);
@@ -77,6 +95,12 @@ void MainWindow::createMenus()
     }
     addTaskAct -> setShortcuts(QKeySequence::New);
     connect(addTaskAct, &QAction::triggered, this, &MainWindow::addTask);
+
+    addListAct -> setShortcuts(QKeySequence::New);
+    connect(addListAct, &QAction::triggered, this, &MainWindow::addList);
+
+    deleteListAct -> setShortcuts(QKeySequence::Delete);
+    connect(deleteListAct, &QAction::triggered, this, &MainWindow::deleteList);
 
     newDatafileAct = new QAction(tr("&Create New Data File"), this);
     connect(newDatafileAct, &QAction::triggered, this, &MainWindow::newDatafile);
@@ -91,6 +115,8 @@ void MainWindow::createMenus()
     OptionsMenu = menuBar()->addMenu(tr("&Options"));
     ListMenu = menuBar()->addMenu(tr("&List Selection"));
     EditMenu->addAction(addTaskAct);
+    EditMenu->addAction(addListAct);
+    EditMenu->addAction(deleteListAct);
     OptionsMenu->addAction(newDatafileAct);
     OptionsMenu->addAction(changeDBAct);
     OptionsMenu->addAction(exitProgramAct);
@@ -101,7 +127,6 @@ void MainWindow::createMenus()
     ListMenu->addAction(list4);
     ListMenu->addAction(list5);
 }
-
 
 void MainWindow::createFilters(QHBoxLayout *layout)
 {
@@ -155,10 +180,9 @@ void MainWindow::initializeTable()
     table -> setSelectionMode(QAbstractItemView::SingleSelection);
     table -> setStyleSheet("QTableView {selection-background-color: #E0F7FA; selection-color: #000000;}");
 
-    IOManager mng;
+    //IOManager mng;
     //inserting data
    // updateTable(IOManager::readFile(path,mng));
-    initializeLists(path,mng);
 
     connect( table, SIGNAL( cellDoubleClicked (int, int) ),
      this, SLOT( cellSelected( int ) ) );
@@ -170,11 +194,120 @@ void MainWindow::addTask()
     dlg.setModal(true);
     dlg.setPath(path);
     dlg.setOrigin(this);
+    dlg.loadLists();
     dlg.exec();
 }
 
-void MainWindow::setViewList(){
+void MainWindow::addList()
+{
+    ListAdder dlg;
+    dlg.setModal(true);
+    dlg.setOrigin(this);
+    dlg.exec();
+}
 
+void MainWindow::createNewList(const string& name){
+    if(l1->getName() == ""){
+        l1->setName(name);
+        list1->setText(QString::fromStdString(string("&") + name));
+        list1->setEnabled(true);
+        activeLists++;
+    } else if(l2->getName() == ""){
+        l2->setName(name);
+        list2->setText(QString::fromStdString(string("&") + name));
+        list2->setEnabled(true);
+        activeLists++;
+    } else if(l3->getName() == ""){
+        l3->setName(name);
+        list3->setText(QString::fromStdString(string("&") + name));
+        list3->setEnabled(true);
+        activeLists++;
+    } else if(l4->getName() == ""){
+        l4->setName(name);
+        list4->setText(QString::fromStdString(string("&") + name));
+        list4->setEnabled(true);
+        activeLists++;
+    } else if(l5->getName() == ""){
+        l5->setName(name);
+        list5->setText(QString::fromStdString(string("&") + name));
+        list5->setEnabled(true);
+        activeLists++;
+    }
+}
+void MainWindow::deleteList()
+{
+    ListDeleter dlg;
+    dlg.setModal(true);
+    dlg.setOrigin(this);
+    dlg.loadLists();
+    dlg.exec();
+}
+
+void MainWindow::resetSingleList(const string &name){
+    if(l1->getName() == name){
+        l1->reset();
+        list1->setText(QString::fromStdString("&Empty"));
+        list1->setEnabled(false);
+        activeLists--;
+    } else if(l2->getName() == name){
+        l2->reset();
+        list2->setText(QString::fromStdString("&Empty"));
+        list2->setEnabled(false);
+        activeLists--;
+    } else if(l3->getName() == name){
+        l3->reset();
+        list3->setText(QString::fromStdString("&Empty"));
+        list3->setEnabled(false);
+        activeLists--;
+    } else if(l4->getName() == name){
+        l4->reset();
+        list4->setText(QString::fromStdString("&Empty"));
+        list4->setEnabled(false);
+        activeLists--;
+    } else if(l5->getName() == name){
+        l5->reset();
+        list5->setText(QString::fromStdString("&Empty"));
+        list5->setEnabled(false);
+        activeLists--;
+    }
+
+    IOManager mng;
+    vector<string*> lines = IOManager::readFile(path,mng);
+    unsigned int i;
+
+    string s = "";
+
+    for(i=0; i<lines.size(); i++){
+        if(!(lines.at(i)[4].compare(name) == 0)){
+            s+=lines.at(i)[0]+IOManager::regexChar+lines.at(i)[1]+IOManager::regexChar+lines.at(i)[2]+IOManager::regexChar+lines.at(i)[3]+IOManager::regexChar+lines.at(i)[4]+"\n";
+        }
+    }
+
+    IOManager::writeFile(path, s);
+    lines.clear();
+}
+
+void MainWindow::deleteSingleTask(const string &list, const string &dueDate, const string &title, const string &percent, const string &description){
+    if(l1->getName() == list){
+        l1->deleteTask(dueDate,title,percent,description);
+    }
+    else if(l2->getName() == list){
+        l2->deleteTask(dueDate,title,percent,description);
+    }
+    else if(l3->getName() == list){
+        l3->deleteTask(dueDate,title,percent,description);
+    }
+    else if(l4->getName() == list){
+        l4->deleteTask(dueDate,title,percent,description);
+    }
+    else if(l5->getName() == list){
+        l5->deleteTask(dueDate,title,percent,description);
+    }
+}
+
+void MainWindow::setViewList(const string& selection){
+    selectionList = selection;
+    filter();
 }
 
 void MainWindow::newDatafile()
@@ -257,23 +390,28 @@ void MainWindow::changeDB()
         }
    }
     if(valid){
-        addTaskAct->setEnabled(true);
-        allLists->setEnabled(true);
+        resetLists();
+        enableAddList();
     }
 }
 
 void MainWindow::enableAddList(){
-    allLists->setEnabled(true);
+    if(activeLists < 5)
+        addListAct->setEnabled(true);
+    else
+        addListAct->setEnabled(false);
     enableAddTask();
 }
 
 void MainWindow::enableAddTask(){
-    addTaskAct->setEnabled(true);
+    if(activeLists > 0)
+        addTaskAct->setEnabled(true);
+    else
+        addTaskAct->setEnabled(false);
 }
 
 void MainWindow::exitProgram()
 {
-    //cout << addTaskAct->text().toUtf8().constData();
     exit(0);
 }
 
@@ -281,42 +419,47 @@ void MainWindow::cellSelected(int nRow)
 {
     TaskManager dlg(QString("Task Managing"));
     dlg.setModal(true);
-    dlg.loadData(table->item(nRow, 1)->text().toUtf8().constData(), table->item(nRow, 2)->text().toUtf8().constData(), table->item(nRow, 3)->text().toUtf8().constData(), table->item(nRow, 4)->text().toUtf8().constData());
     dlg.setPath(path);
     dlg.setOrigin(this);
+    dlg.loadLists();
+    dlg.loadData(table->item(nRow, 2)->text().toUtf8().constData(), table->item(nRow, 3)->text().toUtf8().constData(),
+                 table->item(nRow, 4)->text().toUtf8().constData(), table->item(nRow, 5)->text().toUtf8().constData(), table->item(nRow, 0)->text().toUtf8().constData());
     dlg.exec();
 }
 
 void MainWindow::initializeLists(const string& path, IOManager& mng){
     vector<string*> data = IOManager::readFile(path,mng);
     string temp;
-    /*l1->setName("");
-    l2->setName("");
-    l3->setName("");
-    l4->setName("");
-    l5->setName("");*/
     for(unsigned int i = 0; i < data.size(); i++){
         temp = data.at(i)[4];
         if(temp != l1->getName() && l1->getName() == ""){
             l1->setName(temp);
             list1->setText(QString::fromStdString(string("&") + temp));
-            list1->setEnabled("true");
-        } else if(temp != l2->getName() && l2->getName() == ""){
+            list1->setEnabled(true);
+            activeLists++;
+        } else if(temp != l2->getName() && l2->getName() == "" && temp != l1->getName()){
             l2->setName(temp);
             list2->setText(QString::fromStdString(string("&") + temp));
-            list2->setEnabled("true");
-        } else if(temp != l3->getName() && l3->getName() == ""){
+            list2->setEnabled(true);
+            activeLists++;
+        } else if(temp != l3->getName() && l3->getName() == "" && temp != l1->getName()
+                  && temp != l2->getName()){
             l3->setName(temp);
             list3->setText(QString::fromStdString(string("&") + temp));
-            list3->setEnabled("true");
-        } else if(temp != l4->getName() && l4->getName() == ""){
+            list3->setEnabled(true);
+            activeLists++;
+        } else if(temp != l4->getName() && l4->getName() == "" && temp != l1->getName()
+                  && temp != l2->getName() && temp != l3->getName()){
             l4->setName(temp);
             list4->setText(QString::fromStdString(string("&") + temp));
-            list4->setEnabled("true");
-        } else if(temp != l5->getName() && l5->getName() == ""){
+            list4->setEnabled(true);
+            activeLists++;
+        } else if(temp != l5->getName() && l5->getName() == "" && temp != l1->getName()
+                  && temp != l2->getName() && temp != l3->getName() && temp != l4->getName()){
             l5->setName(temp);
             list5->setText(QString::fromStdString(string("&") + temp));
-            list5->setEnabled("true");
+            list5->setEnabled(true);
+            activeLists++;
         }
     }
 
@@ -340,6 +483,16 @@ void MainWindow::initializeLists(const string& path, IOManager& mng){
         list5->setText(QString::fromStdString(string("&Empty")));
         list5->setEnabled(false);
     }
+
+    if(activeLists < 5 && IOManager::exists(path))
+        addListAct->setEnabled(true);
+    else
+        addListAct->setEnabled(false);
+
+    if(activeLists == 0)
+        deleteListAct->setEnabled(false);
+    else
+        deleteListAct->setEnabled(true);
 
     initializeTasks(data);
 }
@@ -370,7 +523,68 @@ void MainWindow::resetLists(){
     l3->reset();
     l4->reset();
     l5->reset();
+    activeLists = 0;
     initializeLists(path, mng);
+}
+
+const vector<string*> MainWindow::getOutput(IOManager& mng){
+    l1->loadTasksData(mng);
+    l2->loadTasksData(mng);
+    l3->loadTasksData(mng);
+    l4->loadTasksData(mng);
+    l5->loadTasksData(mng);
+    return mng.data;
+}
+
+void MainWindow::decreaseActiveSubject(){
+    activeLists--;
+}
+
+void MainWindow::decreaseActiveSubject(const string& listName){
+    if(l1->getName() == listName){
+        l1->setName("");
+        list1->setText(QString::fromStdString(string("&Empty")));
+        list1->setEnabled(false);
+    }
+    else if(l2->getName() == listName){
+        l2->setName("");
+        list2->setText(QString::fromStdString(string("&Empty")));
+        list2->setEnabled(false);
+    }
+    else if(l3->getName() == listName){
+        l3->setName("");
+        list3->setText(QString::fromStdString(string("&Empty")));
+        list3->setEnabled(false);
+    }
+    else if(l4->getName() == listName){
+        l4->setName("");
+        list4->setText(QString::fromStdString(string("&Empty")));
+        list4->setEnabled(false);
+    }
+    else if(l5->getName() == listName){
+        l5->setName("");
+        list5->setText(QString::fromStdString(string("&Empty")));
+        list5->setEnabled(false);
+    }
+    activeLists--;
+}
+
+void MainWindow::updateOutput(){
+    if(activeLists < 5)
+        addListAct->setEnabled(true);
+    else
+        addListAct->setEnabled(false);
+
+    if(activeLists == 0)
+        deleteListAct->setEnabled(false);
+    else {
+        deleteListAct->setEnabled(true);
+        allLists->setEnabled(true);
+    }
+
+    enableAddTask();
+
+    filter();
 }
 void MainWindow::updateTable(const vector<string*>& data){
 
@@ -403,7 +617,7 @@ void MainWindow::updateTable(const vector<string*>& data){
 void MainWindow::filter()
 {
     IOManager mng;
-    vector<string*> data = IOManager::readFile(path,mng);
+    vector<string*> data = getOutput(mng);
     bool completed = cb_completed->isChecked();
 
     time_t now = time(0);
@@ -414,6 +628,14 @@ void MainWindow::filter()
         int year = stoi((mng.dates = IOManager::split(data.at(i)[0], '/'))[0]);
         int month = stoi((mng.dates = IOManager::split(data.at(i)[0], '/'))[1]);
         int day = stoi((mng.dates = IOManager::split(data.at(i)[0], '/'))[2]);
+
+        if(selectionList != "&All"){
+            if((selectionList.find(data.at(i)[4])) == std::string::npos){
+                data.erase(data.begin()+i);
+                i--;
+                continue;
+            }
+        }
 
         if(completed){
             if(stoi(data.at(i)[2]) == 100){
@@ -481,8 +703,20 @@ MainWindow::~MainWindow()
     delete cb_completed;
     delete table;
     delete addTaskAct;
+    delete addListAct;
     delete changeDBAct;
     delete exitProgramAct;
+    delete list1;
+    delete list2;
+    delete list3;
+    delete list4;
+    delete list5;
+    delete allLists;
     delete EditMenu;
     delete OptionsMenu;
+    delete l1;
+    delete l2;
+    delete l3;
+    delete l4;
+    delete l5;
 }

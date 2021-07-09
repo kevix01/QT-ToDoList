@@ -59,7 +59,7 @@ void CreateDbFile::on_createbtn_clicked()
     string sfolder(ui->folder_ed->text().toUtf8().constData());
     string stitle(ui->name_ed->text().toUtf8().constData());
     origin->setPath(sfolder + QString(QDir::separator()).toUtf8().constData() + stitle + ".cfg");
-    origin->filter();
+    origin->resetLists();
     origin->enableAddList();
     this->close();
 }

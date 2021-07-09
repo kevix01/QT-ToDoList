@@ -13,6 +13,8 @@ SOURCES +=  \
             ../QT-ToDoList-App/iomanager.cpp \
             ../QT-ToDoList-App/mainwindow.cpp \
             ../QT-ToDoList-App/taskmanager.cpp \
+            ../QT-ToDoList-App/listadder.cpp \
+            ../QT-ToDoList-App/listdeleter.cpp \
             iomanagertest.cpp \
             main.cpp \
             mainwindowtest.cpp \
@@ -22,7 +24,9 @@ HEADERS += \
     ../QT-ToDoList-App/createdbfile.h \
     ../QT-ToDoList-App/iomanager.h \
     ../QT-ToDoList-App/mainwindow.h \
-    ../QT-ToDoList-App/taskmanager.h \ \
+    ../QT-ToDoList-App/taskmanager.h \
+    ../QT-ToDoList-App/listadder.h \
+    ../QT-ToDoList-App/listdeleter.h \
     iomanagertest.h \
     mainwindowtest.h \
     taskmanagertest.h
@@ -30,6 +34,8 @@ HEADERS += \
 FORMS += \
     ../QT-ToDoList-App/createdbfile.ui \
     ../QT-ToDoList-App/mainwindow.ui \
+    ../QT-ToDoList-App/listadder.ui \
+    ../QT-ToDoList-App/listdeleter.ui \
     ../QT-ToDoList-App/taskmanager.ui
 
 INCLUDEPATH += $$PWD/../QT-ToDoList-App

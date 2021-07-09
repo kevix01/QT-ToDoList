@@ -7,8 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>482</width>
-    <height>334</height>
+    <height>365</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>482</width>
+    <height>365</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>482</width>
+    <height>365</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -19,48 +31,48 @@
      <x>20</x>
      <y>10</y>
      <width>441</width>
-     <height>271</height>
+     <height>311</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
        <string>Due Date</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="1" column="1">
      <widget class="QDateEdit" name="datepicker"/>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string>Title</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QLineEdit" name="title_et"/>
     </item>
-    <item row="2" column="1">
+    <item row="3" column="1">
      <widget class="QSlider" name="slider">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
+    <item row="4" column="0">
      <widget class="QLabel" name="label_4">
       <property name="text">
        <string>Description</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="4" column="1">
      <widget class="QPlainTextEdit" name="description_ed"/>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="percent_lbl">
       <property name="minimumSize">
        <size>
@@ -73,13 +85,27 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>List</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="comboBox">
+      <property name="maxVisibleItems">
+       <number>5</number>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QPushButton" name="savebtn">
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>300</y>
+     <y>330</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -91,8 +117,8 @@
   <widget class="QPushButton" name="cancelbtn">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>300</y>
+     <x>260</x>
+     <y>330</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -105,7 +131,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>300</y>
+     <y>330</y>
      <width>89</width>
      <height>25</height>
     </rect>

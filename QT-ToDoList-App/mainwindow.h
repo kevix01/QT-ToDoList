@@ -24,7 +24,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public Observer
 {
     Q_OBJECT
 
@@ -52,17 +52,31 @@ public:
         configFile.close();
         this->path = path;
     }
+    TaskList* l1 {new TaskList()};
+    TaskList* l2 {new TaskList()};
+    TaskList* l3 {new TaskList()};
+    TaskList* l4 {new TaskList()};
+    TaskList* l5 {new TaskList()};
 
     static constexpr const char* configDBFile = "DefaultDBPath.cfg"; //global static variable for the configDBFile default database path
+    void updateOutput() override;
+    void decreaseActiveSubject() override;
+    void decreaseActiveSubject(const string& listName) override;
+    void createNewList(const string& name);
+    void resetLists();
+    void resetSingleList(const string& name);
+    void deleteSingleTask(const string& list, const string& dueDate, const string& title, const string& percent, const string& description);
     ~MainWindow();
 
 private slots:
     void addTask();
+    void addList();
+    void deleteList();
     void changeDB();
     void exitProgram();
     void newDatafile();
     void cellSelected(int nRow);
-    void setViewList();
+    void setViewList(const string& selection);
 
 public slots:
     void filter();
@@ -72,17 +86,19 @@ private:
     friend class TaskManagerTest;
     Ui::MainWindow *ui;
     string path; //string were is saved the default database file path (read by the configDBFile) on program startup, new db file creation or db change
+    string selectionList {"&All"};
+    int activeLists {0};
     void createMenus(); //method for menus creation
     void createFilters(QHBoxLayout *layout); //method for filters creation
     void initializeTable(); //method to initialize the output table on the program startup
+    const vector<string*> getOutput(IOManager& mng);
+    void updateTable(const vector<string*>& data); //method that is in charge of updating the output table when something changes (es. task add, db file change)
     static string readDefaultPath(); //static method to read the default path of database file from the configDBFile configuration file.
                                     //return the path as a string
     static bool defaultPathConfigFileExists(const char* name); //static method that checks if the configDBFile exists
     int getWeekNumber(tm t);
     void initializeLists(const string& path, IOManager& mng);
     void initializeTasks(const vector<string*>& data);
-    void resetLists();
-    void updateTable(const vector<string*>& data); //method that is in charge of updating the output table when something changes (es. task add, db file change)
     //Ui components
     QRadioButton *rb_all;
     QRadioButton *rb_overdue;
@@ -96,6 +112,8 @@ private:
     QMenu *ListMenu;
     QAction *newDatafileAct;
     QAction *addTaskAct;
+    QAction *addListAct;
+    QAction *deleteListAct;
     QAction *changeDBAct;
     QAction *exitProgramAct;
     QAction *allLists;
@@ -104,11 +122,6 @@ private:
     QAction *list3;
     QAction *list4;
     QAction *list5;
-    TaskList* l1 {new TaskList()};
-    TaskList* l2 {new TaskList()};
-    TaskList* l3 {new TaskList()};
-    TaskList* l4 {new TaskList()};
-    TaskList* l5 {new TaskList()};
 };
 
 #endif // MAINWINDOW_H
