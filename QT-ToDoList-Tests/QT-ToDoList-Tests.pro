@@ -15,6 +15,8 @@ SOURCES +=  \
             ../QT-ToDoList-App/taskmanager.cpp \
             ../QT-ToDoList-App/listadder.cpp \
             ../QT-ToDoList-App/listdeleter.cpp \
+            ../QT-ToDoList-App/task.cpp \
+            ../QT-ToDoList-App/tasklist.cpp \
             iomanagertest.cpp \
             main.cpp \
             mainwindowtest.cpp \
@@ -27,6 +29,8 @@ HEADERS += \
     ../QT-ToDoList-App/taskmanager.h \
     ../QT-ToDoList-App/listadder.h \
     ../QT-ToDoList-App/listdeleter.h \
+    ../QT-ToDoList-App/task.h \
+    ../QT-ToDoList-App/tasklist.h \
     iomanagertest.h \
     mainwindowtest.h \
     taskmanagertest.h

@@ -180,10 +180,6 @@ void MainWindow::initializeTable()
     table -> setSelectionMode(QAbstractItemView::SingleSelection);
     table -> setStyleSheet("QTableView {selection-background-color: #E0F7FA; selection-color: #000000;}");
 
-    //IOManager mng;
-    //inserting data
-   // updateTable(IOManager::readFile(path,mng));
-
     connect( table, SIGNAL( cellDoubleClicked (int, int) ),
      this, SLOT( cellSelected( int ) ) );
 }
@@ -489,8 +485,10 @@ void MainWindow::initializeLists(const string& path, IOManager& mng){
     else
         addListAct->setEnabled(false);
 
-    if(activeLists == 0)
+    if(activeLists == 0){
         deleteListAct->setEnabled(false);
+        addTaskAct->setEnabled(false);
+    }
     else
         deleteListAct->setEnabled(true);
 

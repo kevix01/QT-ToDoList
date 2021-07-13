@@ -51,20 +51,23 @@ void MainWindowTest::TableComponentTest(){
     //tables rows number checking
     QCOMPARE(m->table->rowCount(), 3);
     //compairing task 1
-    QCOMPARE(m->table->item(0,1)->text(), "2023/06/19");
-    QCOMPARE(m->table->item(0,2)->text(), "Testing title 1");
-    QCOMPARE(m->table->item(0,3)->text(), "25");
-    QCOMPARE(m->table->item(0,4)->text(), "Description test of task 1");
+    QCOMPARE(m->table->item(0,0)->text(), "Test List 1");
+    QCOMPARE(m->table->item(0,2)->text(), "2023/06/19");
+    QCOMPARE(m->table->item(0,3)->text(), "Testing title 1");
+    QCOMPARE(m->table->item(0,4)->text(), "25");
+    QCOMPARE(m->table->item(0,5)->text(), "Description test of task 1");
     //compairing task 2
-    QCOMPARE(m->table->item(1,1)->text(), "2022/12/28");
-    QCOMPARE(m->table->item(1,2)->text(), "Testing title 2");
-    QCOMPARE(m->table->item(1,3)->text(), "48");
-    QCOMPARE(m->table->item(1,4)->text(), "Description test of task 2");
+    QCOMPARE(m->table->item(1,0)->text(), "Test List 2");
+    QCOMPARE(m->table->item(1,2)->text(), "2022/12/28");
+    QCOMPARE(m->table->item(1,3)->text(), "Testing title 2");
+    QCOMPARE(m->table->item(1,4)->text(), "48");
+    QCOMPARE(m->table->item(1,5)->text(), "Description test of task 2");
     //compairing task 3
-    QCOMPARE(m->table->item(2,1)->text(), "2021/05/31");
-    QCOMPARE(m->table->item(2,2)->text(), "Testing title 3");
-    QCOMPARE(m->table->item(2,3)->text(), "100");
-    QCOMPARE(m->table->item(2,4)->text(), "Description test of task 3");
+    QCOMPARE(m->table->item(2,0)->text(), "Test List 3");
+    QCOMPARE(m->table->item(2,2)->text(), "2021/05/31");
+    QCOMPARE(m->table->item(2,3)->text(), "Testing title 3");
+    QCOMPARE(m->table->item(2,4)->text(), "100");
+    QCOMPARE(m->table->item(2,5)->text(), "Description test of task 3");
 
     QTest::mouseClick(m->cb_completed, Qt::LeftButton);
     QVERIFY2(m->cb_completed->isChecked(), "'Not completed' checkbox is still not checked after simulating mouse left click.");
@@ -73,14 +76,16 @@ void MainWindowTest::TableComponentTest(){
     QCOMPARE(m->table->rowCount(), 2);
 
     //compairing task 1
-    QCOMPARE(m->table->item(0,1)->text(), "2023/06/19");
-    QCOMPARE(m->table->item(0,2)->text(), "Testing title 1");
-    QCOMPARE(m->table->item(0,3)->text(), "25");
-    QCOMPARE(m->table->item(0,4)->text(), "Description test of task 1");
+    QCOMPARE(m->table->item(0,0)->text(), "Test List 1");
+    QCOMPARE(m->table->item(0,2)->text(), "2023/06/19");
+    QCOMPARE(m->table->item(0,3)->text(), "Testing title 1");
+    QCOMPARE(m->table->item(0,4)->text(), "25");
+    QCOMPARE(m->table->item(0,5)->text(), "Description test of task 1");
 
     //compairing task 2
-    QCOMPARE(m->table->item(1,1)->text(), "2022/12/28");
-    QCOMPARE(m->table->item(1,2)->text(), "Testing title 2");
-    QCOMPARE(m->table->item(1,3)->text(), "48");
-    QCOMPARE(m->table->item(1,4)->text(), "Description test of task 2");
+    QCOMPARE(m->table->item(1,0)->text(), "Test List 2");
+    QCOMPARE(m->table->item(1,2)->text(), "2022/12/28");
+    QCOMPARE(m->table->item(1,3)->text(), "Testing title 2");
+    QCOMPARE(m->table->item(1,4)->text(), "48");
+    QCOMPARE(m->table->item(1,5)->text(), "Description test of task 2");
 }

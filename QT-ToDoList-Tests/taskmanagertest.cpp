@@ -12,9 +12,15 @@ void TaskManagerTest::taskLoadingTest()
     dlg.setOrigin(m);
     dlg.show();
 
+    dlg.ui->comboBox->addItem(QString::fromStdString("Test List 1"));
+    dlg.ui->comboBox->addItem(QString::fromStdString("Test List 2"));
+    dlg.ui->comboBox->addItem(QString::fromStdString("Test List 3"));
+    dlg.ui->comboBox->addItem(QString::fromStdString("Test List 4"));
+    dlg.ui->comboBox->addItem(QString::fromStdString("Test List 5"));
+
     //importing data of first task trough setData() method
     dlg.loadData(m->table->item(0, 2)->text().toUtf8().constData(), m->table->item(0, 3)->text().toUtf8().constData(),
-                 m->table->item(0, 4)->text().toUtf8().constData(), m->table->item(0, 5)->text().toUtf8().constData(), m->table->item(0, 1)->text().toUtf8().constData());
+                 m->table->item(0, 4)->text().toUtf8().constData(), m->table->item(0, 5)->text().toUtf8().constData(), m->table->item(0, 0)->text().toUtf8().constData());
     //dlg.setPath("RegularDbTest.cfg");
 
     //cheking dialog's components
@@ -32,6 +38,7 @@ void TaskManagerTest::taskLoadingTest()
     QCOMPARE(dlg.ui->title_et->text(), "Testing title 1");
     QCOMPARE(dlg.ui->description_ed->toPlainText(), "Description test of task 1");
     QCOMPARE(dlg.ui->slider->value(), 25);
+    QCOMPARE(dlg.ui->comboBox->currentText(), "Test List 1");
 
     //testing checkFields() integrity on description data change
     dlg.ui->description_ed->clear();
