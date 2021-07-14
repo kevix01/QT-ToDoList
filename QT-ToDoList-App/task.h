@@ -6,18 +6,33 @@ using namespace std;
 class Task
 {
 public:
-    Task(const string& title, const string& description, const string& completePercent, const string& date);
+    struct Date{
+    public:
+        Date() {}
+        Date(int year, int month, int day) : year(year), month(month), day(day) {}
+        bool operator ==(const Date& right) const{
+            if(this->year == right.year && this->month == right.month && this->day == right.day)
+                return true;
+            else
+                return false;
+        }
+        int year;
+        int month;
+        int day;
+    };
+    Task(const string& title, const string& description, int completePercent, const Date& date);
     const string& getTitle(){return this->title;}
     const string& getDescription(){return this->description;}
-    const string& getCompletePercent(){return this->completePercent;}
-    const string& getDate(){return this->date;}
-    void modify(const string &duedate, const string &title, const string &percent, const string &description); //modify task's data
+    const int& getCompletePercent() const;
+    const Date &getDate() const;
+    const string getStringDate() const;
+    void modify(const Date& duedate, const string &title, int percent, const string &description); //modify task's data
 
 private:
     string title;
     string description;
-    string completePercent;
-    string date;
+    int completePercent;
+    Date date;
 };
 
 #endif // TASK_H

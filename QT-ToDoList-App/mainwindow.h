@@ -67,7 +67,7 @@ public:
     void resetLists(); //reset all lists freeing memory of all the related tasks (used when changed data file)
     void resetSingleList(const string& name); //reset a single list and all related tasks, decrementing activeLists counter (update the data file too)
     void deleteSingleTask(const string& list, const string& dueDate, const string& title, const string& percent, const string& description);
-                        //calls respective's list method to delete the related task with same data as given in input (freeing memory)
+                        //calls respective list method in order to delete the related task with same data as given in input (freeing memory)
     ~MainWindow();
 
 private slots:
@@ -101,6 +101,7 @@ private:
     int getWeekNumber(tm t);
     void initializeLists(const string& path, IOManager& mng); //initialize lists with data given by data file
     void initializeTasks(const vector<string*>& data); //initialize tasks with data took from data file (given in input as a vector of strings' array)
+    void updateUnDoneTasksCounters(); //update output of undone tasks counters for each list
     //Ui components
     QRadioButton *rb_all;
     QRadioButton *rb_overdue;

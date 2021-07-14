@@ -1,6 +1,7 @@
 #include <memory>
 #include "taskmanager.h"
 #include "ui_taskmanager.h"
+#include "task.h"
 
 TaskManager::TaskManager(QString dialogTitle, QWidget *parent) :
     QDialog(parent),
@@ -145,113 +146,198 @@ void TaskManager::on_savebtn_clicked()
                 s+=lines.at(i)[0]+IOManager::regexChar+lines.at(i)[1]+IOManager::regexChar+lines.at(i)[2]+IOManager::regexChar+lines.at(i)[3]+IOManager::regexChar+lines.at(i)[4]+"\n";
             }
             s += sdatepicker+IOManager::regexChar+stitle+IOManager::regexChar+spercent+IOManager::regexChar+sdescr+IOManager::regexChar+membershipList;
+            IOManager dateMng;
+            dateMng.dates = IOManager::split(sdatepicker, '/');
+            Task::Date date(stoi(dateMng.dates[0]), stoi(dateMng.dates[1]), stoi(dateMng.dates[2]));
+
+            std::unique_ptr<Task> task(new Task(stitle,sdescr,stoi(spercent),date));
 
             if(origin->l1->getName() == membershipList){
-                origin->l1->addNewTask(sdatepicker,stitle,spercent,sdescr);
+                origin->l1->insertTask(task);
             }
             else if(origin->l2->getName() == membershipList){
-                origin->l2->addNewTask(sdatepicker,stitle,spercent,sdescr);
+                origin->l2->insertTask(task);
             }
             else if(origin->l3->getName() == membershipList){
-                origin->l3->addNewTask(sdatepicker,stitle,spercent,sdescr);
+                origin->l3->insertTask(task);
             }
             else if(origin->l4->getName() == membershipList){
-                origin->l4->addNewTask(sdatepicker,stitle,spercent,sdescr);
+                origin->l4->insertTask(task);
             }
             else if(origin->l5->getName() == membershipList){
-                origin->l5->addNewTask(sdatepicker,stitle,spercent,sdescr);
+                origin->l5->insertTask(task);
             }
         }else{
             for(i=0; i<lines.size(); i++){
-                if(lines.at(i)[0].compare(oldDuedate) == 0 && lines.at(i)[1].compare(oldTitle) == 0 &&
-                        lines.at(i)[2].compare(oldPercent) == 0 && lines.at(i)[3].compare(oldDescription) == 0 && lines.at(i)[4].compare(oldList) == 0){
+                if(lines.at(i)[0].compare(oldDuedate) == 0 && lines.at(i)[1].compare(oldTitle) == 0 && lines.at(i)[2].compare(oldPercent) == 0 &&
+                        lines.at(i)[3].compare(oldDescription) == 0 && lines.at(i)[4].compare(oldList) == 0){
                     s += sdatepicker+IOManager::regexChar+stitle+IOManager::regexChar+spercent+IOManager::regexChar+sdescr+IOManager::regexChar+membershipList+"\n";
                 }else{
                     s+=lines.at(i)[0]+IOManager::regexChar+lines.at(i)[1]+IOManager::regexChar+lines.at(i)[2]+IOManager::regexChar+lines.at(i)[3]+IOManager::regexChar+lines.at(i)[4]+"\n";
                 }
             }
             if(oldList == membershipList)
-                editTaskNoListChange(sdatepicker,stitle,spercent,sdescr,membershipList);
+                editTaskNoListChange(sdatepicker,stitle,spercent,sdescr);
             else
                 editTaskWithListChange(sdatepicker,stitle,spercent,sdescr,membershipList);
         }
         IOManager::writeFile(path, s);
         lines.clear();
-        //origin->filter();
         this->close();
     }
 }
 
-void TaskManager::editTaskNoListChange(const string &duedate, const string &title, const string &percent, const string &description, const string &list) const{
-    if(origin->l1->getName() == list){
-        origin->l1->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
+void TaskManager::editTaskNoListChange(const string &duedate, const string &title, const string& percent, const string &description) const{
+    IOManager dateMng;
+    dateMng.dates = IOManager::split(duedate, '/');
+    Task::Date date(stoi(dateMng.dates[0]), stoi(dateMng.dates[1]), stoi(dateMng.dates[2]));
+
+    IOManager oldDateMng;
+    dateMng.dates = IOManager::split(oldDuedate, '/');
+    Task::Date oldDate(stoi(dateMng.dates[0]), stoi(dateMng.dates[1]), stoi(dateMng.dates[2]));
+
+    if(origin->l1->getName() == oldList){
+        for(auto& itr : origin->l1->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l1->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
-    else if(origin->l2->getName() == list){
-        origin->l2->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
+    else if(origin->l2->getName() == oldList){
+        for(auto& itr : origin->l2->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l2->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
-    else if(origin->l3->getName() == list){
-        origin->l3->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
+    else if(origin->l3->getName() == oldList){
+        for(auto& itr : origin->l3->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l3->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
-    else if(origin->l4->getName() == list){
-        origin->l4->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
+    else if(origin->l4->getName() == oldList){
+        for(auto& itr : origin->l4->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l4->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
-    else if(origin->l5->getName() == list){
-        origin->l5->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
+    else if(origin->l5->getName() == oldList){
+        for(auto& itr : origin->l5->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l5->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
+    }
+}
+
+void TaskManager::moveTaskToDestinationList(unique_ptr<Task> &task, const string &listName) const{
+    //add task in destination list
+    if(origin->l1->getName() == listName){
+        origin->l1->addNewTask(task);
+    }
+    else if(origin->l2->getName() == listName){
+        origin->l2->addNewTask(task);
+    }
+    else if(origin->l3->getName() == listName){
+        origin->l3->addNewTask(task);
+    }
+    else if(origin->l4->getName() == listName){
+        origin->l4->addNewTask(task);
+    }
+    else if(origin->l5->getName() == listName){
+        origin->l5->addNewTask(task);
     }
 }
 
 void TaskManager::editTaskWithListChange(const string &duedate, const string &title, const string &percent, const string &description, const string &list) const{
-    Task* temp;
+    IOManager dateMng;
+    dateMng.dates = IOManager::split(duedate, '/');
+    Task::Date date(stoi(dateMng.dates[0]), stoi(dateMng.dates[1]), stoi(dateMng.dates[2]));
+
+    IOManager oldDateMng;
+    oldDateMng.dates = IOManager::split(oldDuedate, '/');
+    Task::Date oldDate(stoi(oldDateMng.dates[0]), stoi(oldDateMng.dates[1]), stoi(oldDateMng.dates[2]));
 
     //remove task from old list
     if(origin->l1->getName() == oldList){
-        temp = origin->l1->removeTask(oldDuedate,oldTitle,oldPercent,oldDescription);
+        for(auto& itr : origin->l1->getTasksList())
+                if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                    moveTaskToDestinationList(itr,list);
+                    origin->l1->removeTask(itr);
+                    break;
+                }
     }
     else if(origin->l2->getName() == oldList){
-        temp = origin->l2->removeTask(oldDuedate,oldTitle,oldPercent,oldDescription);
+        for(auto& itr : origin->l2->getTasksList())
+                if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                    moveTaskToDestinationList(itr,list);
+                    origin->l2->removeTask(itr);
+                    break;
+                }
     }
     else if(origin->l3->getName() == oldList){
-        temp = origin->l3->removeTask(oldDuedate,oldTitle,oldPercent,oldDescription);
+        for(auto& itr : origin->l3->getTasksList())
+                if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                    moveTaskToDestinationList(itr,list);
+                    origin->l3->removeTask(itr);
+                    break;
+                }
     }
     else if(origin->l4->getName() == oldList){
-        temp = origin->l4->removeTask(oldDuedate,oldTitle,oldPercent,oldDescription);
+        for(auto& itr : origin->l4->getTasksList())
+                if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                    moveTaskToDestinationList(itr,list);
+                    origin->l4->removeTask(itr);
+                    break;
+                }
     }
     else if(origin->l5->getName() == oldList){
-        temp = origin->l5->removeTask(oldDuedate,oldTitle,oldPercent,oldDescription);
+        for(auto& itr : origin->l5->getTasksList())
+                if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                    moveTaskToDestinationList(itr,list);
+                    origin->l5->removeTask(itr);
+                    break;
+                }
     }
 
-    //add task in destination list
+    //Task modification
     if(origin->l1->getName() == list){
-        origin->l1->insertTask(temp);
+        for(auto& itr : origin->l1->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l1->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
     else if(origin->l2->getName() == list){
-        origin->l2->insertTask(temp);
+        for(auto& itr : origin->l2->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l2->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
     else if(origin->l3->getName() == list){
-        origin->l3->insertTask(temp);
+        for(auto& itr : origin->l3->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l3->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
     else if(origin->l4->getName() == list){
-        origin->l4->insertTask(temp);
+        for(auto& itr : origin->l4->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l4->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
     else if(origin->l5->getName() == list){
-        origin->l5->insertTask(temp);
-    }
-
-    //updates task
-    if(origin->l1->getName() == list){
-        origin->l1->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
-    }
-    else if(origin->l2->getName() == list){
-        origin->l2->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
-    }
-    else if(origin->l3->getName() == list){
-        origin->l3->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
-    }
-    else if(origin->l4->getName() == list){
-        origin->l4->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
-    }
-    else if(origin->l5->getName() == list){
-        origin->l5->modifyTask(oldDuedate,oldTitle,oldPercent,oldDescription,duedate,title,percent,description);
+        for(auto& itr : origin->l5->getTasksList())
+            if(itr->getTitle() == oldTitle && itr->getDate() == oldDate && itr->getCompletePercent() == stoi(oldPercent) && itr->getDescription() == oldDescription){
+                origin->l5->modifyTask(itr,date,title,stoi(percent),description);
+                break;
+            }
     }
 }
 void TaskManager::on_cancelbtn_clicked()
@@ -275,12 +361,11 @@ void TaskManager::on_deletebtn_clicked()
     string s = "";
 
     for(i=0; i<lines.size(); i++){
-        if(!(lines.at(i)[0].compare(oldDuedate) == 0 && lines.at(i)[1].compare(oldTitle) == 0 &&
-                lines.at(i)[2].compare(oldPercent) == 0 && lines.at(i)[3].compare(oldDescription) == 0 && lines.at(i)[4].compare(oldList) == 0)){
+        if(!(lines.at(i)[0].compare(oldDuedate) == 0 && lines.at(i)[1].compare(oldTitle) == 0 && lines.at(i)[2].compare(oldPercent) == 0 &&
+             lines.at(i)[3].compare(oldDescription) == 0 && lines.at(i)[4].compare(oldList) == 0)){
             s+=lines.at(i)[0]+IOManager::regexChar+lines.at(i)[1]+IOManager::regexChar+lines.at(i)[2]+IOManager::regexChar+lines.at(i)[3]+IOManager::regexChar+lines.at(i)[4]+"\n";
         }
     }
-
     IOManager::writeFile(path, s);
     lines.clear();
     origin->deleteSingleTask(oldList,oldDuedate,oldTitle,oldPercent,oldDescription);

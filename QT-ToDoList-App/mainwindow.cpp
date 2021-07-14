@@ -284,20 +284,44 @@ void MainWindow::resetSingleList(const string &name){
 }
 
 void MainWindow::deleteSingleTask(const string &list, const string &dueDate, const string &title, const string &percent, const string &description){
+
+    IOManager dateMng;
+    dateMng.dates = IOManager::split(dueDate, '/');
+    Task::Date date(stoi(dateMng.dates[0]), stoi(dateMng.dates[1]), stoi(dateMng.dates[2]));
     if(l1->getName() == list){
-        l1->deleteTask(dueDate,title,percent,description);
+        for(auto& itr : l1->getTasksList())
+            if(itr->getTitle() == title && itr->getDate() == date && itr->getCompletePercent() == stoi(percent) && itr->getDescription() == description){
+                l1->deleteTask(itr);
+                break;
+            }
     }
     else if(l2->getName() == list){
-        l2->deleteTask(dueDate,title,percent,description);
+        for(auto& itr : l2->getTasksList())
+            if(itr->getTitle() == title && itr->getDate() == date && itr->getCompletePercent() == stoi(percent) && itr->getDescription() == description){
+                l2->deleteTask(itr);
+                break;
+            }
     }
     else if(l3->getName() == list){
-        l3->deleteTask(dueDate,title,percent,description);
+        for(auto& itr : l3->getTasksList())
+            if(itr->getTitle() == title && itr->getDate() == date && itr->getCompletePercent() == stoi(percent) && itr->getDescription() == description){
+                l3->deleteTask(itr);
+                break;
+            }
     }
     else if(l4->getName() == list){
-        l4->deleteTask(dueDate,title,percent,description);
+        for(auto& itr : l4->getTasksList())
+            if(itr->getTitle() == title && itr->getDate() == date && itr->getCompletePercent() == stoi(percent) && itr->getDescription() == description){
+                l4->deleteTask(itr);
+                break;
+            }
     }
     else if(l5->getName() == list){
-        l5->deleteTask(dueDate,title,percent,description);
+        for(auto& itr : l5->getTasksList())
+            if(itr->getTitle() == title && itr->getDate() == date && itr->getCompletePercent() == stoi(percent) && itr->getDescription() == description){
+                l5->deleteTask(itr);
+                break;
+            }
     }
 }
 
@@ -495,22 +519,61 @@ void MainWindow::initializeLists(const string& path, IOManager& mng){
     initializeTasks(data);
 }
 
+void MainWindow::updateUnDoneTasksCounters(){
+    if(l1->getName() != ""){
+        if(l1->getUndoneTasks() > 0)
+            list1->setText(QString::fromStdString(string("&") + l1->getName() + string(" (") + to_string(l1->getUndoneTasks()) + string(")")));
+        else
+            list1->setText(QString::fromStdString(string("&") + l1->getName()));
+    }
+    if(l2->getName() != ""){
+        if(l2->getUndoneTasks() > 0)
+            list2->setText(QString::fromStdString(string("&") + l2->getName() + string(" (") + to_string(l2->getUndoneTasks()) + string(")")));
+        else
+            list2->setText(QString::fromStdString(string("&") + l2->getName()));
+    }
+    if(l3->getName() != ""){
+        if(l3->getUndoneTasks() > 0)
+            list3->setText(QString::fromStdString(string("&") + l3->getName() + string(" (") + to_string(l3->getUndoneTasks()) + string(")")));
+        else
+            list3->setText(QString::fromStdString(string("&") + l3->getName()));
+    }
+    if(l4->getName() != ""){
+        if(l4->getUndoneTasks() > 0)
+            list4->setText(QString::fromStdString(string("&") + l4->getName() + string(" (") + to_string(l4->getUndoneTasks()) + string(")")));
+        else
+            list4->setText(QString::fromStdString(string("&") + l4->getName()));
+    }
+    if(l5->getName() != ""){
+        if(l5->getUndoneTasks() > 0)
+            list5->setText(QString::fromStdString(string("&") + l5->getName() + string(" (") + to_string(l5->getUndoneTasks()) + string(")")));
+        else
+            list5->setText(QString::fromStdString(string("&") + l5->getName()));
+    }
+}
 void MainWindow::initializeTasks(const vector<string*>& data){
     string temp;
+    IOManager dateMng;
     for(unsigned int i = 0; i < data.size(); i++){
+        dateMng.dates = IOManager::split(data.at(i)[0], '/');
+        Task::Date date(stoi(dateMng.dates[0]), stoi(dateMng.dates[1]), stoi(dateMng.dates[2]));
+
+        std::unique_ptr<Task> task(new Task(data.at(i)[1], data.at(i)[3], stoi(data.at(i)[2]), date));
         temp = data.at(i)[4];
         if(temp == l1->getName()){
-            l1->addNewTask(data.at(i));
+            l1->addNewTask(task);
         } else if(temp == l2->getName()){
-            l2->addNewTask(data.at(i));
+            l2->addNewTask(task);
         } else if(temp == l3->getName()){
-            l3->addNewTask(data.at(i));
+            l3->addNewTask(task);
         } else if(temp == l4->getName()){
-            l4->addNewTask(data.at(i));
+            l4->addNewTask(task);
         } else if(temp == l5->getName()){
-            l5->addNewTask(data.at(i));
+            l5->addNewTask(task);
         }
+        dateMng.dates.clear();
     }
+    updateUnDoneTasksCounters();
     updateTable(data);
 }
 
@@ -581,7 +644,7 @@ void MainWindow::updateOutput(){
     }
 
     enableAddTask();
-
+    updateUnDoneTasksCounters();
     filter();
 }
 void MainWindow::updateTable(const vector<string*>& data){
@@ -686,7 +749,7 @@ int MainWindow::getWeekNumber(tm t)
     int julian = t.tm_yday;  // Jan 1 = 1, Jan 2 = 2, etc...
     int dow = t.tm_wday;  // Sun = 0, Mon = 1, etc...
     int weekNum = ((julian + 6) / 7);
-    if (dow == 0){  // adjust for being after Saturday of week #1
+    if (dow == 0 || dow == 6){  // adjust for being after Saturday of week #1
         --weekNum;
     }
     return weekNum;

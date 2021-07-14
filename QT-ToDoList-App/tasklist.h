@@ -2,6 +2,8 @@
 #define TASKLIST_H
 #include <iostream>
 #include <list>
+#include <memory>
+#include <algorithm>
 #include "task.h"
 #include "observer.h"
 #include "iomanager.h"
@@ -11,26 +13,26 @@ class TaskList
 {
 public:
     explicit TaskList(const string& name = "") : name(name){} //constructor of tasklist (default name of "" if unused)
-    void reset();
-    void addNewTask(const string* data); //allocate and insert in the list a new task with input data of an array of strings
-    void addNewTask(const string &duedate, const string &title, const string &percent, const string &description); //allocate and insert in the list a new task with input data of strings
+    void reset(); //reset list deleting all related tasks (freeing allocated memory)
+    void addNewTask(unique_ptr<Task>& task);
     void registerObserver(Observer* observer);
     void removeObserver();
     const string& getName() const{ return this->name; }
-    void loadTasksData(IOManager& mng) const;
+    void loadTasksData(IOManager& mng) const; //load all tasks' data of the list
     void setName(const string& name){ this->name = name; }
-    void modifyTask(const string& oldDueDate, const string& oldTitle, const string& oldPercent, const string& oldDescription,
-            const string &duedate, const string &title, const string &percent, const string &description);
-    Task* removeTask(const string& oldDueDate, const string& oldTitle, const string& oldPercent, const string& oldDescription); //remove task from list and return a pointer to it
-    void insertTask(Task* task){ tasks.push_back(task); }                                                                       //in order to transfer it into another list
-    void deleteTask(const string& oldDueDate, const string& oldTitle, const string& oldPercent, const string& oldDescription); //delete task from list freeing memory allocated
-    list<Task*>& getTasksList(){ return this->tasks; }
+    void modifyTask(unique_ptr<Task>& task, const Task::Date& duedate, const string& title, int percent, const string& description);
+    void removeTask(unique_ptr<Task>& task); //remove task from list for list change
+    void insertTask(unique_ptr<Task>& task); //insert task and notify the observer
+    void deleteTask(unique_ptr<Task>& task); //delete task from list for permanent delete
+    list<unique_ptr<Task>>& getTasksList(){ return this->tasks; }
+    const int& getUndoneTasks(){ return this->unDoneTasks; }
     ~TaskList();
 private:
     void notifyGui(); //call the update method of observer
 private:
     string name;
-    list<Task*> tasks;
+    list<unique_ptr<Task>> tasks;
+    int unDoneTasks {0};
     Observer* gui {nullptr};
 };
 

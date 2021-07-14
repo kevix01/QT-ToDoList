@@ -44,8 +44,9 @@ private slots: //methods for dialog's components actions (input by user)
 private:
     friend class TaskManagerTest;
     void checkFields(); //method to check field of the "task-add" dialog to check validity
-    void editTaskNoListChange(const string& duedate, const string& title, const string& percent, const string& description, const string& list) const;
+    void editTaskNoListChange(const string &duedate, const string& title, const string &percent, const string& description) const;
     void editTaskWithListChange(const string& duedate, const string& title, const string& percent, const string& description, const string& list) const;
+    void moveTaskToDestinationList(unique_ptr<Task>& task, const string& listName) const; //insert a certain task into a destination list (used for list change)
     Ui::NewTaskDialog *ui;
     bool newTask;
     string path; //path of database file where to apply modifications (took from MainWindow class)

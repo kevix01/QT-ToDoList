@@ -62,18 +62,41 @@ void TaskManagerTest::taskAddingTest(){
     TaskManager dlg(QString("Task Adding - Testing"));
     dlg.setModal(true);
     dlg.setOrigin(m);
-
+    dlg.loadLists();
     //checking if savebutton (Add task) is disabled
     QVERIFY2(!dlg.ui->savebtn->isEnabled(), "'Add task' button is enabled (it should be disabled).");
+
+    //Check if the lists have been loaded correctly in the combobox
+    QCOMPARE(dlg.ui->comboBox->itemText(0), QString::fromStdString("Test List 1"));
+    QCOMPARE(dlg.ui->comboBox->itemText(1), QString::fromStdString("Test List 2"));
+    QCOMPARE(dlg.ui->comboBox->itemText(2), QString::fromStdString("Test List 3"));
+
+    //Check if counter of undone tasks of list 3 ('Test List 3') is zero
+    QCOMPARE(dlg.origin->l3->getUndoneTasks(), 0);
+    //Set current index on the one where is found the lists' name
+    dlg.ui->comboBox->setCurrentIndex(dlg.ui->comboBox->findText(QString::fromStdString("Test List 3")));
+
+    //Check if current index of combobox is the respective one of 'Test List 3'
+    QCOMPARE(dlg.ui->comboBox->currentIndex(), 2);
 
     //Adding test to the title texbox and checking if savebtn is still disabled
     dlg.ui->title_et->setText(QString("Testing title text"));
     QVERIFY2(!dlg.ui->savebtn->isEnabled(), "'Add task' button is enabled (it should be disabled).");
 
     //Adding test to the description textbox and checking if savebtn is now enabled
-    dlg.ui->description_ed->setPlainText(QString("Testing title text"));
+    dlg.ui->description_ed->setPlainText(QString("Testing description text"));
     QVERIFY2(dlg.ui->savebtn->isEnabled(), "'Add task' button is disabled (it should be enabled).");
 
-    //closing dlg
+    //Set value of complete percent slider to 100 and compare the value
+    dlg.ui->slider->setValue(50);
+    QCOMPARE(dlg.ui->slider->value(), 50);
+
+    //Simulate save button click
+    QTest::mouseClick(dlg.ui->savebtn, Qt::LeftButton);
+
+    //Check if counter of undone of list 3 ('Test List 3') has been incremented successfully
+    QCOMPARE(dlg.origin->l3->getUndoneTasks(), 1);
+
+    dlg.hide();
     QVERIFY2(dlg.close(), "Error during dialog close.");
 }
