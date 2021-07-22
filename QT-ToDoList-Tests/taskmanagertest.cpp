@@ -18,11 +18,9 @@ void TaskManagerTest::taskLoadingTest()
     dlg.ui->comboBox->addItem(QString::fromStdString("Test List 4"));
     dlg.ui->comboBox->addItem(QString::fromStdString("Test List 5"));
 
-    //importing data of first task trough setData() method
+    //importing data of first task trough loadData() method
     dlg.loadData(m->table->item(0, 2)->text().toUtf8().constData(), m->table->item(0, 3)->text().toUtf8().constData(),
                  m->table->item(0, 4)->text().toUtf8().constData(), m->table->item(0, 5)->text().toUtf8().constData(), m->table->item(0, 0)->text().toUtf8().constData());
-    //dlg.setPath("RegularDbTest.cfg");
-
     //cheking dialog's components
     QVERIFY2(dlg.ui->savebtn, "'Save' button not created.");
     QVERIFY2(dlg.ui->savebtn->isEnabled(), "'Save' button not enabled (it should be).");
@@ -59,7 +57,7 @@ void TaskManagerTest::taskLoadingTest()
 }
 
 void TaskManagerTest::taskAddingTest(){
-    TaskManager dlg(QString("Task Adding - Testing"));
+    TaskManager dlg(QString("Adding Tasks - Testing"));
     dlg.setModal(true);
     dlg.setOrigin(m);
     dlg.loadLists();
@@ -73,6 +71,9 @@ void TaskManagerTest::taskAddingTest(){
 
     //Check if counter of undone tasks of list 3 ('Test List 3') is zero
     QCOMPARE(dlg.origin->l3->getUndoneTasks(), 0);
+
+    //Adding task 1
+
     //Set current index on the one where is found the lists' name
     dlg.ui->comboBox->setCurrentIndex(dlg.ui->comboBox->findText(QString::fromStdString("Test List 3")));
 
@@ -80,11 +81,11 @@ void TaskManagerTest::taskAddingTest(){
     QCOMPARE(dlg.ui->comboBox->currentIndex(), 2);
 
     //Adding test to the title texbox and checking if savebtn is still disabled
-    dlg.ui->title_et->setText(QString("Testing title text"));
+    dlg.ui->title_et->setText(QString("Testing title text 1"));
     QVERIFY2(!dlg.ui->savebtn->isEnabled(), "'Add task' button is enabled (it should be disabled).");
 
     //Adding test to the description textbox and checking if savebtn is now enabled
-    dlg.ui->description_ed->setPlainText(QString("Testing description text"));
+    dlg.ui->description_ed->setPlainText(QString("Testing description text 1"));
     QVERIFY2(dlg.ui->savebtn->isEnabled(), "'Add task' button is disabled (it should be enabled).");
 
     //Set value of complete percent slider to 100 and compare the value
@@ -97,6 +98,74 @@ void TaskManagerTest::taskAddingTest(){
     //Check if counter of undone of list 3 ('Test List 3') has been incremented successfully
     QCOMPARE(dlg.origin->l3->getUndoneTasks(), 1);
 
-    dlg.hide();
-    QVERIFY2(dlg.close(), "Error during dialog close.");
+    //Adding task 2
+
+    //Set current index on the one where is found the lists' name
+    dlg.ui->comboBox->setCurrentIndex(dlg.ui->comboBox->findText(QString::fromStdString("Test List 3")));
+
+    //Check if current index of combobox is the respective one of 'Test List 3'
+    QCOMPARE(dlg.ui->comboBox->currentIndex(), 2);
+
+    //Adding test to the title texbox and checking if savebtn is still disabled
+    dlg.ui->title_et->setText(QString("Testing title text 2"));
+
+    //Adding test to the description textbox and checking if savebtn is now enabled
+    dlg.ui->description_ed->setPlainText(QString("Testing description text 2"));
+    QVERIFY2(dlg.ui->savebtn->isEnabled(), "'Add task' button is disabled (it should be enabled).");
+
+    //Set value of complete percent slider to 100 and compare the value
+    dlg.ui->slider->setValue(100);
+    QCOMPARE(dlg.ui->slider->value(), 100);
+
+    //Simulate save button click
+    QTest::mouseClick(dlg.ui->savebtn, Qt::LeftButton);
+
+    //Check if counter of undone of list 3 ('Test List 3') has not been incremented
+    QCOMPARE(dlg.origin->l3->getUndoneTasks(), 1);
+
+    //Adding task 3
+
+    //Set current index on the one where is found the lists' name
+    dlg.ui->comboBox->setCurrentIndex(dlg.ui->comboBox->findText(QString::fromStdString("Test List 3")));
+
+    //Check if current index of combobox is the respective one of 'Test List 3'
+    QCOMPARE(dlg.ui->comboBox->currentIndex(), 2);
+
+    //Adding test to the title texbox and checking if savebtn is still disabled
+    dlg.ui->title_et->setText(QString("Testing title text 2"));
+
+    //Adding test to the description textbox and checking if savebtn is now enabled
+    dlg.ui->description_ed->setPlainText(QString("Testing description text 2"));
+    QVERIFY2(dlg.ui->savebtn->isEnabled(), "'Add task' button is disabled (it should be enabled).");
+
+    //Set value of complete percent slider to 100 and compare the value
+    dlg.ui->slider->setValue(90);
+    QCOMPARE(dlg.ui->slider->value(), 90);
+
+    //Simulate save button click
+    QTest::mouseClick(dlg.ui->savebtn, Qt::LeftButton);
+
+    //Check if counter of undone of list 3 ('Test List 3') has been incremented successfully
+    QCOMPARE(dlg.origin->l3->getUndoneTasks(), 2);
+
+    //Modify task 1 of List 3
+
+    dlg.loadData(m->table->item(3, 2)->text().toUtf8().constData(), m->table->item(3, 3)->text().toUtf8().constData(),
+                 m->table->item(3, 4)->text().toUtf8().constData(), m->table->item(3, 5)->text().toUtf8().constData(), m->table->item(3, 0)->text().toUtf8().constData());
+
+    //verifing the correctness of data imported in the dialog
+    QCOMPARE(dlg.ui->title_et->text(), "Testing title text 1");
+    QCOMPARE(dlg.ui->description_ed->toPlainText(), "Testing description text 1");
+    QCOMPARE(dlg.ui->slider->value(), 50);
+    QCOMPARE(dlg.ui->comboBox->currentText(), "Test List 3");
+
+    //Set value of complete percent slider to 100 and compare the value
+    dlg.ui->slider->setValue(100);
+    QCOMPARE(dlg.ui->slider->value(), 100);
+
+    //Simulate save button click
+    QTest::mouseClick(dlg.ui->savebtn, Qt::LeftButton);
+
+    //Check if counter of undone of list 3 ('Test List 3') has been decremented successfully
+    QCOMPARE(dlg.origin->l3->getUndoneTasks(), 1);
 }
